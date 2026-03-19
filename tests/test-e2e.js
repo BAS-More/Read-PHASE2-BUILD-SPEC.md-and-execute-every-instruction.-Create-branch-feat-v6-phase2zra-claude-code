@@ -44,12 +44,21 @@ function runCli(args, cwd) {
 
 function pipeToHook(hookFile, jsonData, cwd) {
   const hookPath = path.join(ROOT, 'hooks', hookFile);
-  const jsonStr = JSON.stringify(jsonData).replace(/'/g, "'\\''");
+  const jsonStr = JSON.stringify(jsonData);
+  // Cross-platform: write JSON to temp file and pipe it
+  const tmpFile = path.join(os.tmpdir(), `ezra-hook-input-${Date.now()}.json`);
+  fs.writeFileSync(tmpFile, jsonStr, 'utf8');
   try {
-    const result = execSync(`echo '${jsonStr}' | node "${hookPath}"`, { encoding: 'utf8', timeout: 5000, cwd, shell: true });
+    const isWin = process.platform === 'win32';
+    const cmd = isWin
+      ? `type "${tmpFile}" | node "${hookPath}"`
+      : `cat "${tmpFile}" | node "${hookPath}"`;
+    const result = execSync(cmd, { encoding: 'utf8', timeout: 5000, cwd, shell: true });
     return { stdout: result, stderr: '', exitCode: 0 };
   } catch (err) {
     return { stdout: err.stdout || '', stderr: err.stderr || '', exitCode: err.status || 1 };
+  } finally {
+    try { fs.unlinkSync(tmpFile); } catch (_) {}
   }
 }
 
