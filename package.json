@@ -1,0 +1,46 @@
+{
+  "name": "ezra-claude-code",
+  "version": "4.0.0",
+  "description": "EZRA — Automated Epistemic Governance & Intelligence System. Multi-agent codebase governance for Claude Code.",
+  "bin": {
+    "ezra-claude-code": "bin/cli.js",
+    "ezra": "bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "commands",
+    "agents",
+    "hooks",
+    "skills",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node tests/run-tests.js",
+    "test:hooks": "node tests/test-hooks.js",
+    "test:cli": "node tests/test-cli.js",
+    "test:structure": "node tests/test-structure.js",
+    "test:templates": "node tests/test-templates.js",
+    "test:commands": "node tests/test-commands.js",
+    "lint": "node tests/lint-all.js"
+  },
+  "keywords": [
+    "claude-code", "governance", "architecture", "code-review",
+    "ai", "subagents", "sdlc", "documentation", "autonomous",
+    "multi-project", "devops", "security", "best-practices"
+  ],
+  "author": "AVI-OS (github.com/BAS-More)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BAS-More/ezra-claude-code.git"
+  },
+  "homepage": "https://github.com/BAS-More/ezra-claude-code#readme",
+  "bugs": {
+    "url": "https://github.com/BAS-More/ezra-claude-code/issues"
+  },
+  "engines": {
+    "node": ">=16.7.0"
+  }
+}

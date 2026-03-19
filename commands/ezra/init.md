@@ -1,0 +1,131 @@
+---
+name: ezra:init
+description: Initialize EZRA governance for this project. Scans codebase architecture, creates .ezra/ state directory, and establishes baseline knowledge.
+---
+
+You are initializing the EZRA (Automated Epistemic Governance & Intelligence System) for this project.
+
+## Phase 1: Create State Directory
+
+Create the `.ezra/` directory structure if it does not exist:
+
+```
+.ezra/
+├── decisions/          # Will hold architectural decision records
+├── scans/              # Will hold timestamped scan results
+├── plans/              # Will hold registered plans for reconciliation
+├── governance.yaml     # Governance rules and protected paths
+└── knowledge.yaml      # Epistemic state — what EZRA knows
+```
+
+## Phase 2: Codebase Discovery
+
+Scan the project to build initial knowledge. Read the following:
+
+1. **Project root files**: package.json, tsconfig.json, Cargo.toml, pyproject.toml, go.mod, Makefile, docker-compose.yml, .env.example — whatever exists
+2. **Directory structure**: Map the top-level and second-level directories
+3. **Entry points**: Identify main entry files (src/index.ts, src/main.ts, app.ts, main.py, etc.)
+4. **Configuration**: CI/CD files (.github/workflows/, azure-pipelines.yml), linting configs, test configs
+5. **Existing documentation**: README.md, CLAUDE.md, ARCHITECTURE.md, ADR files, docs/ directory
+
+## Phase 3: Architecture Analysis
+
+Using the discovered files, determine:
+
+1. **Language & Runtime**: Primary language, version, runtime
+2. **Framework**: Web framework, ORM, test framework, build tool
+3. **Architecture Pattern**: Monolith, microservices, monorepo, serverless, etc.
+4. **Layer Structure**: Routes/Controllers → Services → Repositories → Models (or equivalent)
+5. **External Dependencies**: Databases, caches, message queues, cloud services, APIs
+6. **Test Infrastructure**: Test runner, coverage tool, E2E framework, test directory structure
+
+## Phase 4: Write Initial State
+
+Write `governance.yaml` with sensible defaults:
+
+```yaml
+# .ezra/governance.yaml
+version: 1
+initialized: <ISO timestamp>
+project:
+  name: <from package.json or directory name>
+  language: <detected>
+  framework: <detected>
+
+protected_paths:
+  # Paths that require explicit decision records before modification
+  - pattern: "*.env*"
+    reason: "Environment configuration — changes affect all environments"
+  - pattern: "docker-compose*.yml"
+    reason: "Infrastructure definition — changes affect deployment"
+  - pattern: "**/migrations/**"
+    reason: "Database migrations — irreversible in production"
+  - pattern: ".github/workflows/**"
+    reason: "CI/CD pipeline — changes affect all deployments"
+
+enforcement:
+  require_decision_for_protected_paths: true
+  require_reconciliation_before_merge: false
+  auto_scan_on_init: true
+
+standards:
+  # Detected or default coding standards
+  strict_types: true
+  no_any: true
+  test_coverage_minimum: 80
+```
+
+Write `knowledge.yaml` with discovered state:
+
+```yaml
+# .ezra/knowledge.yaml
+version: 1
+last_scan: <ISO timestamp>
+confidence: initial
+
+architecture:
+  language: <detected>
+  runtime: <detected>
+  framework: <detected>
+  pattern: <detected>
+  layers: <list of detected layers>
+
+entry_points:
+  - <list of main entry files>
+
+dependencies:
+  external_services: <list>
+  databases: <list>
+  key_packages: <top 10 most important dependencies>
+
+test_infrastructure:
+  runner: <detected>
+  coverage_tool: <detected>
+  e2e_framework: <detected or "none">
+  test_directories: <list>
+
+risks:
+  # Initial risk assessment
+  - <any detected risks like missing tests, no CI, no types, etc.>
+```
+
+## Phase 5: Report
+
+Present a compact summary:
+
+```
+EZRA INITIALIZED
+═══════════════════════════════════════════
+Project: <name>
+Language: <lang> | Framework: <framework>
+Architecture: <pattern>
+Layers: <detected layers>
+Protected Paths: <count> configured
+Decisions: 0 recorded
+Knowledge Confidence: INITIAL
+═══════════════════════════════════════════
+Next: Run /ezra:scan for deep analysis
+      Run /ezra:decide to record architectural decisions
+```
+
+Do NOT ask for confirmation before starting. Execute all phases automatically.

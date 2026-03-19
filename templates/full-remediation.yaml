@@ -1,0 +1,58 @@
+name: full-remediation
+description: Complete project remediation — gap analysis, document creation, testing, security scan, and report.
+version: 1
+author: EZRA
+
+guard_rails:
+  require_clean_git: false
+  block_on_failure: false
+  max_consecutive_failures: 3
+
+steps:
+  - id: 1
+    name: Gap Analysis
+    type: ezra
+    ezra_command: doc-check
+    on_failure: skip
+
+  - id: 2
+    name: Health Assessment
+    type: ezra
+    ezra_command: health
+    on_failure: skip
+
+  - id: 3
+    name: Bridge Document Gaps
+    type: approval
+    approval_message: "Create missing critical documents?"
+
+  - id: 4
+    name: Create Missing Docs
+    type: ezra
+    ezra_command: doc create
+    depends_on: [3]
+    on_failure: skip
+
+  - id: 5
+    name: Run Tests
+    type: command
+    command: npm test
+    on_failure: ask
+
+  - id: 6
+    name: Security Scan
+    type: ezra
+    ezra_command: scan
+    on_failure: skip
+
+  - id: 7
+    name: Sync Stale Docs
+    type: ezra
+    ezra_command: doc-sync
+    on_failure: skip
+
+  - id: 8
+    name: Final Report
+    type: report
+    report_type: detailed
+    report_sources: [1, 2, 5, 6]
