@@ -20,10 +20,10 @@ function test(name, fn) {
 function assert(condition, msg) { if (!condition) throw new Error(msg); }
 
 function parseFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return null;
   const fm = {};
-  match[1].split('\n').forEach(line => {
+  match[1].split(/\r?\n/).forEach(line => {
     const m = line.match(/^(\w[\w-]*):\s*"?(.+?)"?\s*$/);
     if (m) fm[m[1]] = m[2];
   });

@@ -1,0 +1,15 @@
+# Enforce LF line endings for all text files
+* text=auto eol=lf
+
+# Ensure .md files always use LF (critical for frontmatter parsing)
+*.md text eol=lf
+
+# Ensure .js files always use LF
+*.js text eol=lf
+
+# Ensure .yaml/.yml files always use LF
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# Ensure shell scripts use LF
+*.sh text eol=lf

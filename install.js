@@ -30,6 +30,17 @@ const MANIFEST = {
     'commands/ezra/review.md',
     'commands/ezra/status.md',
     'commands/ezra/help.md',
+    'commands/ezra/doc.md',
+    'commands/ezra/dash.md',
+    'commands/ezra/doc-check.md',
+    'commands/ezra/doc-sync.md',
+    'commands/ezra/doc-approve.md',
+    'commands/ezra/version.md',
+    'commands/ezra/health.md',
+    'commands/ezra/advisor.md',
+    'commands/ezra/process.md',
+    'commands/ezra/auto.md',
+    'commands/ezra/multi.md',
   ],
   agents: [
     'agents/ezra-architect.md',
@@ -42,6 +53,9 @@ const MANIFEST = {
   ],
   hooks: [
     'hooks/ezra-guard.js',
+    'hooks/ezra-dash-hook.js',
+    'hooks/ezra-drift-hook.js',
+    'hooks/ezra-version-hook.js',
   ],
 };
 
