@@ -1,0 +1,48 @@
+=============================================
+RAILWAY DEPLOYMENT — COPY-PASTE READY
+=============================================
+
+=== STEP 1: Sign up ===
+
+Neon.tech: https://neon.tech
+  → Sign up with GitHub
+  → Create project: quiz2biz-staging (region: Asia Pacific Singapore)
+  → Copy connection string → paste below where it says <NEON_Q2B>
+  → Create project: reward-staging
+  → Copy connection string → paste below where it says <NEON_REWARD>
+
+Railway.app: https://railway.app
+  → Sign up with GitHub → authorise BAS-More org
+  → New project: avi-ecosystem
+  → + New → GitHub Repo → BAS-More/Quiz2Biz → rename to: quiz2biz
+  → + New → GitHub Repo → BAS-More/Agen-MVP → rename to: reward-service
+
+=== STEP 2: Quiz2Biz env vars (paste into Railway Variables tab) ===
+
+PORT=${{RAILWAY_PORT}}
+NODE_ENV=staging
+DATABASE_URL=<NEON_Q2B>
+JWT_SECRET=7ab113b3-d688-4f67-9ed2-847bcfca47c9
+JWT_REFRESH_SECRET=1a784153-d91b-4b3c-a4f6-206299f65b32
+CORS_ORIGIN=*
+GH_PACKAGES_TOKEN=<YOUR_GITHUB_PAT_WITH_READ_PACKAGES>
+ANTHROPIC_API_KEY=<YOUR_ANTHROPIC_KEY>
+REWARD_SERVICE_URL=http://reward-service.railway.internal:${{reward-service.PORT}}
+FRONTEND_URL=https://quiz2biz-production.up.railway.app
+
+=== STEP 3: Agent-MVP env vars (paste into Railway Variables tab) ===
+
+PORT=${{RAILWAY_PORT}}
+NODE_ENV=staging
+DATABASE_URL=<NEON_REWARD>
+JWT_SECRET=f768bcc7-7f74-4e39-93cf-8cb2cf47aac2
+JWT_SUPERVISOR_SECRET=80fb122b-1b08-4f90-9605-05d9c8bb29cf
+CORS_ORIGIN=*
+
+=== STEP 4: Verify ===
+
+After Railway deploys, check:
+  Quiz2Biz:     https://<quiz2biz-url>.up.railway.app/api/v1/health
+  Agent-MVP:    https://<reward-service-url>.up.railway.app/api/v1/health
+
+Tell Claude the URLs and I will monitor.

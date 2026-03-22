@@ -36,7 +36,7 @@ const EXPECTED_COMMANDS = [
   'init', 'scan', 'guard', 'reconcile', 'decide', 'review',
   'status', 'health', 'advisor', 'dash', 'doc', 'doc-check',
   'doc-sync', 'doc-approve', 'process', 'auto', 'multi',
-  'version', 'help',
+  'version', 'help', 'sync', 'claude-md', 'bootstrap',
 ];
 
 const EXPECTED_AGENTS = [

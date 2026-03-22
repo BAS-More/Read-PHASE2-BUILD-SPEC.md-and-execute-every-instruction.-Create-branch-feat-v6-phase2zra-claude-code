@@ -41,6 +41,9 @@ const MANIFEST = {
     'commands/ezra/process.md',
     'commands/ezra/auto.md',
     'commands/ezra/multi.md',
+    'commands/ezra/sync.md',
+    'commands/ezra/claude-md.md',
+    'commands/ezra/bootstrap.md',
   ],
   agents: [
     'agents/ezra-architect.md',
@@ -56,6 +59,7 @@ const MANIFEST = {
     'hooks/ezra-dash-hook.js',
     'hooks/ezra-drift-hook.js',
     'hooks/ezra-version-hook.js',
+    'hooks/ezra-avios-bridge.js',
   ],
 };
 

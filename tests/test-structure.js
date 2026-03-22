@@ -60,7 +60,7 @@ test('package.json exists and is valid JSON', () => {
   assert(fs.existsSync(p), 'package.json missing');
   const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
   assert(pkg.name === 'ezra-claude-code', `name is "${pkg.name}" not "ezra-claude-code"`);
-  assert(pkg.version === '4.0.0', `version is "${pkg.version}" not "4.0.0"`);
+  assert(pkg.version === '5.0.0', `version is "${pkg.version}" not "5.0.0"`);
   assert(pkg.bin['ezra-claude-code'] === 'bin/cli.js', 'bin entry wrong');
   assert(pkg.engines.node === '>=16.7.0', 'engines.node wrong');
 });
@@ -89,10 +89,10 @@ test('.gitignore exists', () => {
 
 // ─── File Counts ─────────────────────────────────────────────────
 
-test('19 command files exist', () => {
+test('22 command files exist', () => {
   const dir = path.join(ROOT, 'commands', 'ezra');
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
-  assert(files.length === 19, `Expected 19 commands, found ${files.length}: ${files.join(', ')}`);
+  assert(files.length === 22, `Expected 22 commands, found ${files.length}: ${files.join(', ')}`);
 });
 
 test('4 agent files exist', () => {
@@ -101,10 +101,10 @@ test('4 agent files exist', () => {
   assert(files.length === 4, `Expected 4 agents, found ${files.length}`);
 });
 
-test('4 hook files exist', () => {
+test('5 hook files exist', () => {
   const dir = path.join(ROOT, 'hooks');
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.js'));
-  assert(files.length === 4, `Expected 4 hooks, found ${files.length}`);
+  assert(files.length === 5, `Expected 5 hooks, found ${files.length}`);
 });
 
 test('1 skill file exists', () => {
