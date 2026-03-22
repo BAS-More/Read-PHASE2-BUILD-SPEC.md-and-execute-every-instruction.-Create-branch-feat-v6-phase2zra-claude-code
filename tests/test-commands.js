@@ -36,7 +36,7 @@ const EXPECTED_COMMANDS = [
   'init', 'scan', 'guard', 'reconcile', 'decide', 'review',
   'status', 'health', 'advisor', 'dash', 'doc', 'doc-check',
   'doc-sync', 'doc-approve', 'process', 'auto', 'multi',
-  'version', 'help', 'sync', 'claude-md', 'bootstrap',
+  'version', 'help', 'sync', 'claude-md', 'bootstrap', 'agents',
 ];
 
 const EXPECTED_AGENTS = [
@@ -122,11 +122,39 @@ test('SKILL.md references all commands', () => {
 
 // ─── Cross-references ────────────────────────────────────────────
 
-test('Help command lists all 22 commands', () => {
+test('Help command lists all 23 commands', () => {
   const content = fs.readFileSync(path.join(CMD_DIR, 'help.md'), 'utf8');
-  const critical = ['init', 'scan', 'guard', 'health', 'advisor', 'dash', 'doc', 'process', 'auto', 'multi', 'version'];
+  const critical = ['init', 'scan', 'guard', 'health', 'advisor', 'dash', 'doc', 'process', 'auto', 'multi', 'version', 'agents'];
   for (const cmd of critical) {
     assert(content.includes(`/ezra:${cmd}`), `help.md missing /ezra:${cmd}`);
+  }
+});
+
+// ─── Agent Registry Tests ────────────────────────────────────────
+
+test('Agent registry.yaml exists', () => {
+  const p = path.join(AGENT_DIR, 'registry.yaml');
+  assert(fs.existsSync(p), 'registry.yaml not found');
+});
+
+test('Agent registry.yaml defines 100 roles', () => {
+  const content = fs.readFileSync(path.join(AGENT_DIR, 'registry.yaml'), 'utf8');
+  assert(content.includes('total_roles: 100'), 'registry.yaml should declare total_roles: 100');
+});
+
+test('Agent registry.yaml defines 12 domains', () => {
+  const content = fs.readFileSync(path.join(AGENT_DIR, 'registry.yaml'), 'utf8');
+  const domains = ['architecture', 'security', 'quality', 'testing', 'governance', 'devops', 'documentation', 'performance', 'accessibility', 'data', 'frontend', 'reconciliation'];
+  for (const d of domains) {
+    assert(content.includes(`  ${d}:`), `registry.yaml missing domain: ${d}`);
+  }
+});
+
+test('Agent registry.yaml defines presets', () => {
+  const content = fs.readFileSync(path.join(AGENT_DIR, 'registry.yaml'), 'utf8');
+  const presets = ['quick-review', 'full-scan', 'security-deep', 'pre-release', 'maximum-coverage'];
+  for (const p of presets) {
+    assert(content.includes(`  ${p}:`), `registry.yaml missing preset: ${p}`);
   }
 });
 
