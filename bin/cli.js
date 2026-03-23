@@ -7,7 +7,7 @@ const path = require('path');
 const os = require('os');
 const readline = require('readline');
 
-const EZRA_VERSION = '5.0.0';
+const EZRA_VERSION = '6.0.0';
 const PACKAGE_DIR = path.resolve(__dirname, '..');
 const IS_WIN = process.platform === 'win32';
 const IS_MAC = process.platform === 'darwin';

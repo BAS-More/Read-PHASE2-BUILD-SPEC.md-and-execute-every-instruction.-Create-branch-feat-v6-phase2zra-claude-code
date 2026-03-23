@@ -53,6 +53,8 @@ EZRA persists state in `.ezra/` at the project root:
 - `/ezra:sync` — Sync EZRA governance state with avios-context MCP server
 - `/ezra:claude-md` — Generate or update CLAUDE.md from `.ezra/` state
 - `/ezra:bootstrap` — One-command project onboarding (init + configure + ADR + health + CLAUDE.md)
+- `/ezra:oversight` — Real-time agent oversight — view status, set intervention level, review violations
+- `/ezra:settings` — Unified settings management — view, set, init, add-rule, reset, export, diff
 
 ## Agent System
 

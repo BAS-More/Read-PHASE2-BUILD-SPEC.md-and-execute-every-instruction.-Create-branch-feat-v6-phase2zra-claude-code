@@ -10,7 +10,7 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D16.7-brightgreen)](https://nodejs.org)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)](https://github.com/BAS-More/ezra-claude-code)
 
-EZRA is a multi-agent codebase governance framework for [Claude Code](https://claude.ai/code). It provides 23 slash commands, 4 subagents, 5 lifecycle hooks, 55 SDLC document types, 5-pillar health enforcement, autonomous process execution with guard rails, and multi-project portfolio orchestration.
+EZRA is a multi-agent codebase governance framework for [Claude Code](https://claude.ai/code). It provides 25 slash commands, 4 subagents, 7 lifecycle hooks, 55 SDLC document types, 5-pillar health enforcement, autonomous process execution with guard rails, and multi-project portfolio orchestration.
 
 ### Identity
 
@@ -45,9 +45,9 @@ npx ezra-claude-code --claude --local
 
 | Capability | Description |
 |-----------|-------------|
-| **23 Slash Commands** | Governance, documents, dashboard, processes, autonomous execution, multi-project |
+| **25 Slash Commands** | Governance, documents, dashboard, processes, autonomous execution, multi-project, real-time oversight |
 | **4 Subagents** | Architect, Reviewer, Guardian, Reconciler — dispatched in parallel |
-| **5 Auto-Hooks** | Protected path guard, session dashboard, document drift detection, version tracking, AVI-OS bridge |
+| **7 Auto-Hooks** | Protected path guard, session dashboard, document drift detection, version tracking, AVI-OS bridge, settings parser, real-time oversight |
 | **55 Document Types** | Full SDLC coverage from business case through decommissioning |
 | **5-Pillar Health** | On-Track, No Gaps, Clean, Secure, Best Practices (scored 0-100) |
 | **Process Engine** | Adjustable step-by-step workflows saved as portable templates |
@@ -120,6 +120,8 @@ npx ezra-claude-code --claude --local
 /ezra:claude-md     Generate or update CLAUDE.md from governance state
 /ezra:agents        Agent management — list, recommend, deploy, info
 /ezra:sync          Sync EZRA governance state with AVI-OS context
+/ezra:oversight     Real-time agent oversight — monitor, warn, gate, strict
+/ezra:settings      Unified settings management for all EZRA configuration
 ```
 
 ## Health Pillars
@@ -202,6 +204,8 @@ After installation, add hooks to your `settings.json` for automatic enforcement:
 | `ezra-drift-hook.js` | PostToolUse | Tracks edits, flags stale documents |
 | `ezra-version-hook.js` | PostToolUse | Auto-versions every `.ezra/` change |
 | `ezra-avios-bridge.js` | PostToolUse | Syncs decisions and scan findings to AVI-OS context |
+| `ezra-settings.js` | Utility | Unified settings parser for `.ezra/settings.yaml` |
+| `ezra-oversight.js` | PreToolUse | Real-time agent oversight with 4 intervention levels |
 
 The installer prints the exact JSON configuration after install.
 

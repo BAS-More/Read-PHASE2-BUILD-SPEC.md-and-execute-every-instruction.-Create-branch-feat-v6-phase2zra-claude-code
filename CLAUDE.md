@@ -2,7 +2,7 @@
 
 ## Project
 - **Repo**: C:\Dev\ezra-claude-code (github.com/BAS-More/ezra-claude-code)
-- **Version**: 4.0.0 (building toward 5.0.0)
+- **Version**: 6.0.0
 - **License**: MIT
 - **Node**: >=16.7.0
 - **Dependencies**: ZERO — pure Node.js only. Do NOT add any npm dependencies.
@@ -34,11 +34,11 @@ Run all: `node tests/run-tests.js`
 - `test-e2e.js` — End-to-end flows in temp directories
 - `test-uat.js` — Alpha/Beta/UAT acceptance tests
 
-## Commands (23 current)
-/ezra:init, /ezra:scan, /ezra:guard, /ezra:reconcile, /ezra:decide, /ezra:review, /ezra:status, /ezra:help, /ezra:doc, /ezra:dash, /ezra:doc-check, /ezra:doc-sync, /ezra:doc-approve, /ezra:version, /ezra:health, /ezra:advisor, /ezra:process, /ezra:auto, /ezra:multi, /ezra:bootstrap, /ezra:claude-md, /ezra:agents, /ezra:sync
+## Commands (25 current)
+/ezra:init, /ezra:scan, /ezra:guard, /ezra:reconcile, /ezra:decide, /ezra:review, /ezra:status, /ezra:help, /ezra:doc, /ezra:dash, /ezra:doc-check, /ezra:doc-sync, /ezra:doc-approve, /ezra:version, /ezra:health, /ezra:advisor, /ezra:process, /ezra:auto, /ezra:multi, /ezra:bootstrap, /ezra:claude-md, /ezra:agents, /ezra:sync, /ezra:oversight, /ezra:settings
 
 ## Build Spec
-See `EZRA_V5_BUILD_SPEC.md` for the full v5.0.0 enhancement specification (12 features).
+See `EZRA_V5_BUILD_SPEC.md` and `PHASE1-BUILD-SPEC.md` for full enhancement specifications.
 
 ## Working Conventions
 - Commit after each feature with descriptive messages

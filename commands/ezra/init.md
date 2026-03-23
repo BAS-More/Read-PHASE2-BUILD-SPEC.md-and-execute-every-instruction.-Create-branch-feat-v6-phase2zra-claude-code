@@ -109,7 +109,59 @@ risks:
   - <any detected risks like missing tests, no CI, no types, etc.>
 ```
 
-## Phase 5: Report
+## Phase 5: Initialize Settings
+
+Write `.ezra/settings.yaml` with unified defaults:
+
+```yaml
+# .ezra/settings.yaml — Unified EZRA settings
+standards:
+  typescript_strict: true
+  no_any: true
+  naming: kebab-case
+  error_handling: mandatory
+  max_complexity: 10
+  test_coverage_minimum: 80
+  custom_rules: []
+
+security:
+  profile: standard
+  require_auth_on_all_routes: false
+  secrets_scanning: true
+  input_validation: true
+  rate_limiting: true
+  custom_rules: []
+
+oversight:
+  enabled: true
+  level: warn
+  health_threshold: 75
+  auto_pause_on_critical: true
+  review_every_n_files: 5
+  excluded_paths:
+    - "*.test.ts"
+    - "*.spec.ts"
+    - "docs/*"
+  notify_on:
+    - critical
+    - high
+
+best_practices:
+  enabled: true
+  suggest_frequency: daily
+  domains:
+    - architecture
+    - security
+    - testing
+  auto_suggest: true
+
+workflows:
+  active_templates: []
+  auto_run: false
+  approval_gates: false
+```
+
+## Phase 6: Report
 
 Present a compact summary:
 

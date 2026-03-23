@@ -35,6 +35,10 @@ COMMANDS
   /ezra:bootstrap     One-command project onboarding
   /ezra:help          This help text
 
+REAL-TIME OVERSIGHT
+  /ezra:oversight     View oversight status, violations, and intervention level
+  /ezra:settings      View and manage unified EZRA settings (.ezra/settings.yaml)
+
 AGENT SYSTEM (100 roles × 12 domains × 4 core engines)
   Core Engines:
     ezra-architect    Architecture analysis, layer mapping, dependency tracing
