@@ -89,10 +89,10 @@ test('.gitignore exists', () => {
 
 // ─── File Counts ─────────────────────────────────────────────────
 
-test('26 command files exist', () => {
+test('28 command files exist', () => {
   const dir = path.join(ROOT, 'commands', 'ezra');
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
-  assert(files.length === 26, `Expected 26 commands, found ${files.length}: ${files.join(', ')}`);
+  assert(files.length === 28, `Expected 28 commands, found ${files.length}: ${files.join(', ')}`);
 });
 
 test('4 agent files exist', () => {
@@ -101,10 +101,10 @@ test('4 agent files exist', () => {
   assert(files.length === 4, `Expected 4 agents, found ${files.length}`);
 });
 
-test('7 hook files exist', () => {
+test('9 hook files exist', () => {
   const dir = path.join(ROOT, 'hooks');
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.js'));
-  assert(files.length === 7, `Expected 7 hooks, found ${files.length}`);
+  assert(files.length === 9, `Expected 9 hooks, found ${files.length}`);
 });
 
 test('1 skill file exists', () => {

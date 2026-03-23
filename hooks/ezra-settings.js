@@ -80,6 +80,19 @@ const DEFAULTS = {
       shared_domains: [],
     },
   },
+  project_manager: {
+    enabled: true,
+    mode: 'hybrid',
+    routine_checks: 'rule-based',
+    complex_decisions: 'ai',
+    ai_provider: 'claude',
+    check_interval: 'every_5_tasks',
+    escalation_threshold: 3,
+    stall_detection: 30,
+    daily_report: true,
+    weekly_report: true,
+    milestones: [],
+  },
 };
 
 // ─── YAML Parser (simple, no deps) ──────────────────────────────
@@ -277,6 +290,10 @@ function getSelfLearning(projectDir) {
   return loadSettings(projectDir).self_learning;
 }
 
+function getProjectManager(projectDir) {
+  return loadSettings(projectDir).project_manager;
+}
+
 // ─── Exports (for require()) ─────────────────────────────────────
 
 module.exports = {
@@ -287,6 +304,7 @@ module.exports = {
   getBestPractices,
   getWorkflows,
   getSelfLearning,
+  getProjectManager,
   parseYamlSimple,
   parseValue,
   deepMerge,
