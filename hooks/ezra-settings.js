@@ -125,6 +125,12 @@ const DEFAULTS = {
     capture_sources: 'all',
     archive_after_days: 90,
   },
+  planning: {
+    enabled: true,
+    max_tasks_before_gap_check: 5,
+    checkpoint_on_milestone: true,
+    auto_assign: true,
+  },
   cloud_sync: {
     enabled: false,
     provider: 'local',
@@ -321,6 +327,10 @@ function getBestPractices(projectDir) {
   return loadSettings(projectDir).best_practices;
 }
 
+function getPlanning(projectDir) {
+  return loadSettings(projectDir).planning;
+}
+
 function getMemory(projectDir) {
   return loadSettings(projectDir).memory;
 }
@@ -360,6 +370,7 @@ module.exports = {
   getSecurity,
   getOversight,
   getBestPractices,
+  getPlanning,
   getMemory,
   getWorkflows,
   getSelfLearning,
