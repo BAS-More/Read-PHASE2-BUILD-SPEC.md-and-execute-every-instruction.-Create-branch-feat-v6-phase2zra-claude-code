@@ -1,0 +1,70 @@
+documents:
+  - id: claude-md
+    type: project-instructions
+    path: CLAUDE.md
+    phase: dev
+    status: CURRENT
+    last_updated: "2026-03-22"
+  - id: readme
+    type: readme
+    path: README.md
+    phase: dev
+    status: CURRENT
+    last_updated: "2026-03-22"
+  - id: prd
+    type: product-requirements
+    path: docs/PRD.md
+    phase: pre-dev
+    status: CURRENT
+    last_updated: "2026-03-22"
+    critical: true
+  - id: tad
+    type: technical-architecture
+    path: docs/TAD.md
+    phase: dev
+    status: CURRENT
+    last_updated: "2026-03-22"
+    critical: true
+  - id: deploy-runbook
+    type: deployment-runbook
+    path: docs/deploy-runbook.md
+    phase: post-dev
+    status: CURRENT
+    last_updated: "2026-03-22"
+    critical: true
+  - id: api-spec
+    type: api-specification
+    path: docs/api-spec.md
+    phase: dev
+    status: CURRENT
+    last_updated: "2026-03-22"
+    critical: true
+  - id: test-strategy
+    type: test-strategy
+    path: docs/test-strategy.md
+    phase: dev
+    status: CURRENT
+    last_updated: "2026-03-22"
+    critical: true
+  - id: security-arch
+    type: security-architecture
+    path: docs/security-architecture.md
+    phase: dev
+    status: CURRENT
+    last_updated: "2026-03-22"
+    critical: true
+  - id: adr
+    type: architectural-decisions
+    path: .ezra/decisions/
+    phase: dev
+    status: CURRENT
+    last_updated: "2026-03-22"
+    critical: true
+critical_docs_required:
+  - prd
+  - tad
+  - adr
+  - deploy-runbook
+  - api-spec
+  - test-strategy
+  - security-arch

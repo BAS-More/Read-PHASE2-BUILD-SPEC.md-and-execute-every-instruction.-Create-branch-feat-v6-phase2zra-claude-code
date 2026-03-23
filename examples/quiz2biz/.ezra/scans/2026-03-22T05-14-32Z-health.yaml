@@ -1,0 +1,53 @@
+timestamp: "2026-03-22T05:14:32Z"
+type: health
+health_score: 68
+overall_grade: C
+pillars:
+  on_track:
+    score: 55
+    weight: 25
+    findings:
+      - "4 ADRs recorded — good start"
+      - "No active plans registered — needs sprint planning"
+      - "No previous scans — first scan"
+  no_gaps:
+    score: 45
+    weight: 20
+    findings:
+      - "Missing critical docs: PRD, TAD, deploy-runbook, api-spec, test-strategy, security-arch"
+      - "CLAUDE.md exists and is comprehensive"
+      - "6 of 7 critical documents missing"
+  clean:
+    score: 82
+    weight: 15
+    findings:
+      - "TypeScript strict mode enabled"
+      - "Monorepo structure with Turbo — well organized"
+      - "3 apps (api, web, cli) + 4 libs (database, orchestrator, redis, shared)"
+  secure:
+    score: 75
+    weight: 25
+    findings:
+      - ".env in .gitignore — good"
+      - "Prisma ORM enforces parameterized queries"
+      - "ADR-004 mandates no SQL string concatenation"
+      - "No npm audit run yet"
+  best_practices:
+    score: 78
+    weight: 15
+    findings:
+      - "Azure Pipelines CI/CD configured"
+      - "5 Terraform files for IaC"
+      - "Docker configs for api, web, postgres"
+      - "Structured monorepo with clear separation"
+summary:
+  critical: 0
+  high: 2
+  medium: 4
+  low: 3
+  top_actions:
+    - "Create missing critical documents (PRD, TAD, deploy-runbook)"
+    - "Register active sprint plan"
+    - "Run npm audit for dependency vulnerabilities"
+    - "Create api-spec documentation"
+    - "Set up test coverage reporting"

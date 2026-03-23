@@ -1,0 +1,25 @@
+id: ADR-002
+status: ACTIVE
+date: "2026-01-15"
+category: DATABASE
+decision: "Use PostgreSQL 16 with Prisma ORM for all data access"
+context: "Quiz2Biz needs a relational database that supports JSONB for flexible questionnaire schemas, strong consistency for business document generation, and type-safe query building"
+rationale: "Type-safe queries, migration management, and Azure managed PostgreSQL support. Prisma provides auto-generated types from schema, declarative migrations, and excellent TypeScript integration."
+consequences:
+  positive:
+    - "Type-safe database access eliminates runtime query errors"
+    - "Prisma migrations provide reproducible schema changes"
+    - "Azure Database for PostgreSQL offers managed backups, scaling, and HA"
+    - "JSONB support enables flexible questionnaire data storage"
+  negative:
+    - "Prisma ORM adds abstraction overhead for complex queries"
+    - "Schema changes require migration generation and deployment coordination"
+    - "PostgreSQL-specific features may limit future database portability"
+enforcement:
+  affected_paths:
+    - "libs/database/**"
+    - "prisma/**"
+    - "apps/api/src/**/*.repository.*"
+    - "apps/api/src/**/*.service.*"
+  check_description: "All database access must go through Prisma client. No raw SQL string concatenation. All queries must use parameterized inputs. Schema changes must use Prisma migrations."
+  auto_enforced: true

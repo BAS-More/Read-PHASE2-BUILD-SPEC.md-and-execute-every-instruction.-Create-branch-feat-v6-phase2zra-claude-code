@@ -1,0 +1,46 @@
+log:
+  - id: CHG-0001
+    timestamp: "2026-03-22T04:15:00Z"
+    version_before: "0.0.0"
+    version_after: "1.0.0"
+    type: GOVERNANCE
+    action: CREATED
+    target: ".ezra/"
+    summary: "EZRA initialized for Quiz2Biz project"
+    triggered_by: manual
+  - id: CHG-0002
+    timestamp: "2026-03-22T05:44:41Z"
+    version_before: "1.0.1"
+    version_after: "1.1.0"
+    type: DOCUMENT
+    action: CREATED
+    target: "docs/"
+    summary: "Created 6 critical SDLC documents: PRD, TAD, deploy-runbook, api-spec, test-strategy, security-architecture"
+    triggered_by: manual
+  - id: CHG-0003
+    timestamp: "2026-03-22T05:44:41Z"
+    version_before: "1.1.0"
+    version_after: "1.1.0"
+    type: GOVERNANCE
+    action: UPDATED
+    target: ".ezra/docs/registry.yaml"
+    summary: "Updated document registry with all 7 critical documents"
+    triggered_by: manual
+  - id: CHG-0004
+    timestamp: "2026-03-22T05:44:41Z"
+    version_before: "1.1.0"
+    version_after: "1.1.0"
+    type: PLAN
+    action: CREATED
+    target: ".ezra/plans/sprint-q1-2026-close.yaml"
+    summary: "Registered Q1 2026 sprint close plan (85% complete)"
+    triggered_by: manual
+  - id: CHG-0005
+    timestamp: "2026-03-22T05:44:41Z"
+    version_before: "1.1.0"
+    version_after: "1.1.0"
+    type: SCAN
+    action: CREATED
+    target: ".ezra/scans/"
+    summary: "Health scan: 91/100 (A) — all critical docs present, governance active"
+    triggered_by: manual

@@ -1,0 +1,25 @@
+id: ADR-003
+status: ACTIVE
+date: "2026-01-20"
+category: INFRASTRUCTURE
+decision: "Deploy to Azure Container Apps with Terraform IaC"
+context: "Quiz2Biz requires a scalable, cost-effective hosting platform with container support, automatic scaling, and infrastructure managed as code for reproducibility"
+rationale: "Serverless containers, auto-scaling, managed infrastructure, cost-effective. Azure Container Apps provides built-in ingress, revision management, and Dapr integration. Terraform enables declarative, version-controlled infrastructure."
+consequences:
+  positive:
+    - "Scale-to-zero reduces costs during low-traffic periods"
+    - "Terraform state tracking prevents configuration drift"
+    - "Container Apps managed environment handles TLS, load balancing, and health probes"
+    - "Infrastructure changes are reviewable via PR before apply"
+  negative:
+    - "Container Apps has fewer customization options than AKS"
+    - "Terraform state management requires remote backend setup"
+    - "Cold starts may affect initial request latency after scale-to-zero"
+enforcement:
+  affected_paths:
+    - "infrastructure/terraform/**"
+    - "docker/**"
+    - "azure-pipelines.yml"
+    - "docker-compose*.yml"
+  check_description: "All infrastructure changes must be made through Terraform. Docker configurations must follow multi-stage build patterns. No manual Azure portal changes to production resources."
+  auto_enforced: true
