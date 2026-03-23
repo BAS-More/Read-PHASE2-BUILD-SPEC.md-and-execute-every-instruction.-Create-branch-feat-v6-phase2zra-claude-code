@@ -44,7 +44,9 @@ REAL-TIME OVERSIGHT
   /ezra:progress      Track and report project milestone progress
   /ezra:library       Best practice library — browse, search, add across 14 categories
   /ezra:research      Research agent control — automated best practice discovery
-  /ezra:cost          Cost tracking and budget management for AI agent usage
+  /ezra:portfolio — Cross-project portfolio health dashboard
+/ezra:handoff — Generate session handoff briefing
+/ezra:cost          Cost tracking and budget management for AI agent usage
 
 AGENT SYSTEM (100 roles × 12 domains × 4 core engines)
   Core Engines:

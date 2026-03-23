@@ -22,6 +22,7 @@ const SUITES = [
   { name: 'V6-Settings-Writer', script: 'test-v6-settings-writer.js' },
   { name: 'V6-Library', script: 'test-v6-library.js' },
   { name: 'V6-Agents', script: 'test-v6-agents.js' },
+  { name: 'V6-Dashboard', script: 'test-v6-dashboard-data.js' },
 ];
 
 const testsDir = __dirname;

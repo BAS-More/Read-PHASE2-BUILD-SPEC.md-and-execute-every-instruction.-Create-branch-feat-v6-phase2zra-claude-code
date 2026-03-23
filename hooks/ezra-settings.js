@@ -112,7 +112,19 @@ const DEFAULTS = {
     fallback_order: ['claude', 'codex', 'cursor'],
     task_routing: 'none',
   },
-
+  dashboard: {
+    portfolio_path: '~/.ezra-portfolio.yaml',
+    auto_export: false,
+    export_format: 'yaml',
+    refresh_interval: 'manual',
+  },
+  cloud_sync: {
+    enabled: false,
+    provider: 'local',
+    auto_backup: false,
+    backup_retention: 5,
+    sync_on_change: false,
+  },
 };
 
 // ─── YAML Parser (simple, no deps) ──────────────────────────────
@@ -318,6 +330,14 @@ function getAgents(projectDir) {
   return loadSettings(projectDir).agents;
 }
 
+function getDashboard(projectDir) {
+  return loadSettings(projectDir).dashboard;
+}
+
+function getCloudSync(projectDir) {
+  return loadSettings(projectDir).cloud_sync;
+}
+
 function getLibrary(projectDir) {
   return loadSettings(projectDir).library;
 }
@@ -333,6 +353,8 @@ module.exports = {
   getSelfLearning,
   getProjectManager,
   getAgents,
+  getDashboard,
+  getCloudSync,
   getLibrary,
   parseYamlSimple,
   parseValue,
