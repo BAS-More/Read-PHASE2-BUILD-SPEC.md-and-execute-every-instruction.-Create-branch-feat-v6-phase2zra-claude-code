@@ -10,7 +10,7 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D16.7-brightgreen)](https://nodejs.org)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)](https://github.com/BAS-More/ezra-claude-code)
 
-EZRA is a multi-agent codebase governance framework for [Claude Code](https://claude.ai/code). It provides 19 slash commands, 4 subagents, 4 lifecycle hooks, 55 SDLC document types, 5-pillar health enforcement, autonomous process execution with guard rails, and multi-project portfolio orchestration.
+EZRA is a multi-agent codebase governance framework for [Claude Code](https://claude.ai/code). It provides 23 slash commands, 4 subagents, 5 lifecycle hooks, 55 SDLC document types, 5-pillar health enforcement, autonomous process execution with guard rails, and multi-project portfolio orchestration.
 
 ### Identity
 
@@ -45,9 +45,9 @@ npx ezra-claude-code --claude --local
 
 | Capability | Description |
 |-----------|-------------|
-| **19 Slash Commands** | Governance, documents, dashboard, processes, autonomous execution, multi-project |
+| **23 Slash Commands** | Governance, documents, dashboard, processes, autonomous execution, multi-project |
 | **4 Subagents** | Architect, Reviewer, Guardian, Reconciler — dispatched in parallel |
-| **4 Auto-Hooks** | Protected path guard, session dashboard, document drift detection, version tracking |
+| **5 Auto-Hooks** | Protected path guard, session dashboard, document drift detection, version tracking, AVI-OS bridge |
 | **55 Document Types** | Full SDLC coverage from business case through decommissioning |
 | **5-Pillar Health** | On-Track, No Gaps, Clean, Secure, Best Practices (scored 0-100) |
 | **Process Engine** | Adjustable step-by-step workflows saved as portable templates |
@@ -111,6 +111,15 @@ npx ezra-claude-code --claude --local
 /ezra:version log       Append-only audit trail
 /ezra:version snapshot  Named checkpoint
 /ezra:version diff      Compare two snapshots
+```
+
+### Setup & Integration
+
+```
+/ezra:bootstrap     One-command project onboarding (scan, govern, ADR, health, CLAUDE.md)
+/ezra:claude-md     Generate or update CLAUDE.md from governance state
+/ezra:agents        Agent management — list, recommend, deploy, info
+/ezra:sync          Sync EZRA governance state with AVI-OS context
 ```
 
 ## Health Pillars
@@ -192,6 +201,7 @@ After installation, add hooks to your `settings.json` for automatic enforcement:
 | `ezra-dash-hook.js` | SessionStart | Compact project status every session |
 | `ezra-drift-hook.js` | PostToolUse | Tracks edits, flags stale documents |
 | `ezra-version-hook.js` | PostToolUse | Auto-versions every `.ezra/` change |
+| `ezra-avios-bridge.js` | PostToolUse | Syncs decisions and scan findings to AVI-OS context |
 
 The installer prints the exact JSON configuration after install.
 
