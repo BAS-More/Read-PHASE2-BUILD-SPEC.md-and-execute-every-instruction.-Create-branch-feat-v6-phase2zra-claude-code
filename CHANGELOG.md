@@ -1,5 +1,24 @@
 # Changelog
 
+## [6.0.0] — 2026-03-23
+
+### Added
+- **Phase 1-3**: Core governance, oversight, documentation management
+- **Phase 4**: V6 Enhancement Foundation — settings writer, library catalog, oversight revamp
+- **Phase 5**: Multi-Agent Orchestration — agent roster, scoring, cost tracking
+- **Phase 6**: Dashboard Data + Cloud Sync — portfolio dashboard, handoff briefs, backup/restore
+- **Phase 7**: Workflow Templates Engine — 9 step types, process management, template validation
+- **Phase 8**: Agent Memory System — pattern/lesson/fact storage, auto-capture, dedup, archive
+- **Phase 9**: Holistic Planning Engine — 7-stage pipeline, gap checking, checkpoints
+- **Phase 10**: Licensing + Distribution — tiered licensing, feature gating, CLI installer
+
+### Changed
+- 39 commands, 21 hooks, comprehensive test suite
+- Zero external dependencies — pure Node.js
+- Cross-platform installation support
+
+
+
 All notable changes to EZRA are documented in this file.
 
 ## [5.0.0] — 2025-03-22

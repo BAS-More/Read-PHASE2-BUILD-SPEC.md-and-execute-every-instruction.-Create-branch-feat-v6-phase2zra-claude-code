@@ -131,6 +131,11 @@ const DEFAULTS = {
     checkpoint_on_milestone: true,
     auto_assign: true,
   },
+  licensing: {
+    tier: 'core',
+    license_key: null,
+    offline_cache_days: 30,
+  },
   cloud_sync: {
     enabled: false,
     provider: 'local',
@@ -327,6 +332,10 @@ function getBestPractices(projectDir) {
   return loadSettings(projectDir).best_practices;
 }
 
+function getLicensing(projectDir) {
+  return loadSettings(projectDir).licensing;
+}
+
 function getPlanning(projectDir) {
   return loadSettings(projectDir).planning;
 }
@@ -370,6 +379,7 @@ module.exports = {
   getSecurity,
   getOversight,
   getBestPractices,
+  getLicensing,
   getPlanning,
   getMemory,
   getWorkflows,

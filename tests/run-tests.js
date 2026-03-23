@@ -26,6 +26,7 @@ const SUITES = [
   { name: 'V6-Workflows', script: 'test-v6-workflows.js' },
   { name: 'V6-Memory', script: 'test-v6-memory.js' },
   { name: 'V6-Planner',  script: 'test-v6-planner.js' },
+  { name: 'V6-License',  script: 'test-v6-license.js' },
 ];
 
 const testsDir = __dirname;

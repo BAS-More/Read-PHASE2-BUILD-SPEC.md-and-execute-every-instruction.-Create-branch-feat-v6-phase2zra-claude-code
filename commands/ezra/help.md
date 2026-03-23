@@ -46,7 +46,9 @@ REAL-TIME OVERSIGHT
   /ezra:research      Research agent control — automated best practice discovery
   /ezra:portfolio — Cross-project portfolio health dashboard
 /ezra:memory
-- /ezra:plan — Holistic Planning Engine (create, status, tasks, gap-check) — Agent memory system
+- /ezra:plan
+- /ezra:license — License management (status, activate, deactivate, features)
+- /ezra:install — Install/uninstall/update EZRA — Holistic Planning Engine (create, status, tasks, gap-check) — Agent memory system
 /ezra:workflow — Enhanced workflow template system
 /ezra:handoff — Generate session handoff briefing
 /ezra:cost          Cost tracking and budget management for AI agent usage

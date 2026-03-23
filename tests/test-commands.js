@@ -38,7 +38,9 @@ const EXPECTED_COMMANDS = [
   'doc-sync', 'doc-approve', 'process', 'auto', 'multi',
   'version', 'help', 'sync', 'claude-md', 'bootstrap', 'agents',
   'oversight', 'settings', 'learn', 'pm', 'progress', 'compliance', 'library', 'research', 'cost', 'portfolio', 'handoff', 'workflow', 'memory',
-    'plan', 'workflow', 'cost',
+    'plan',
+    'license',
+    'install', 'workflow', 'cost',
 ];
 
 const EXPECTED_AGENTS = [
