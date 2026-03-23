@@ -19,25 +19,28 @@ updated: <ISO>
 projects:
   - id: quiz2biz
     name: Quiz2Biz
-    path: C:\Dev\quiz-to-build
+    path: C:\Dev\Quiz2Biz
+    service_url: http://localhost:3001    # Live service URL (null for libraries/tools)
     priority: 1              # Portfolio priority order
     phase: dev
     last_health: 72
     last_health_date: <ISO>
     tags: [saas, production, typescript]
-    
+
   - id: mah-sdk
     name: MAH SDK
     path: C:\Dev\MAH
+    service_url: null         # SDK — no running service
     priority: 2
     phase: dev
     last_health: 85
     last_health_date: <ISO>
     tags: [sdk, typescript, open-source]
-    
+
   - id: bnm-platform
     name: BnM Platform
     path: C:\Dev\bas-more-platform
+    service_url: null
     priority: 3
     phase: dev
     last_health: 45
@@ -47,16 +50,28 @@ projects:
   - id: agent-mvp
     name: Agent MVP / Reward Service
     path: C:\Dev\Agent-MVP
+    service_url: http://localhost:3000    # Reward Service API
     priority: 4
     phase: dev
     last_health: null
     last_health_date: null
-    tags: [nestjs, supabase]
+    tags: [nestjs, microservice]
+
+  - id: ezra
+    name: EZRA Governance
+    path: C:\Dev\ezra-claude-code
+    service_url: null         # Governance tool — no service
+    priority: 5
+    phase: dev
+    last_health: null
+    last_health_date: null
+    tags: [governance, nodejs, zero-dep]
 
 groups:
   production: [quiz2biz, bnm-platform]
   sdks: [mah-sdk]
-  all: [quiz2biz, mah-sdk, bnm-platform, agent-mvp]
+  services: [quiz2biz, agent-mvp]
+  all: [quiz2biz, mah-sdk, bnm-platform, agent-mvp, ezra]
 ```
 
 ## Argument Parsing
@@ -76,6 +91,7 @@ groups:
 ### Cross-Project Operations
 - `/ezra:multi health` → Run health check on ALL projects, compare scores
 - `/ezra:multi health <group>` → Health check on a project group
+- `/ezra:multi api-health` → Ping live services (projects with `service_url`), report connectivity
 - `/ezra:multi scan` → Run scan on all projects
 - `/ezra:multi doc-check` → Doc gap analysis across all projects
 - `/ezra:multi advisor` → Portfolio-level advice
@@ -259,6 +275,95 @@ Aggregate state across all projects and provide portfolio-level guidance:
 - **Risk correlation**: "Quiz2Biz and BnM Platform share Azure infrastructure. The 503 issue in BnM may affect Quiz2Biz. Investigate shared dependency."
 - **Governance maturity**: "MAH SDK is your most mature project (Grade B). Use it as the governance model for other projects."
 - **Innovation**: "Your portfolio uses 3 different auth strategies. Consider consolidating on OAuth2/OIDC across all projects for operational simplicity."
+
+## ACTION: api-health — Live Service Connectivity
+
+For each project that has a `service_url` configured (non-null):
+
+1. HTTP GET `{service_url}/api/v1/health` (or `{service_url}/health`)
+2. Measure response time
+3. Parse response for service status
+4. Also check contract version if available: `{service_url}/api/v1/health/contract/version`
+
+Present:
+```
+EZRA PORTFOLIO API HEALTH
+═══════════════════════════════════════════════════════════════════
+SERVICE          URL                          STATUS   LATENCY  CONTRACT
+─────────────────────────────────────────────────────────────────
+Quiz2Biz         http://localhost:3001         UP       42ms     —
+Agent MVP        http://localhost:3000         UP       28ms     v1.0.0
+MAH SDK          (no service)                  —        —        —
+BnM Platform     (no service)                  —        —        —
+EZRA             (no service)                  —        —        —
+─────────────────────────────────────────────────────────────────
+
+INTEGRATION CHECKS:
+  Quiz2Biz → Agent MVP: Quiz2Biz health shows agent-mvp dependency as healthy
+  MAH SDK → Agent MVP:  Contract v1.0.0, min client 0.2.0 (compatible)
+
+All services healthy.
+═══════════════════════════════════════════════════════════════════
+```
+
+If a service is DOWN:
+```
+  Agent MVP        http://localhost:3000         DOWN     —        —
+  ⚠ Agent-MVP unreachable — MAH SDK and Quiz2Biz integrations will fail
+```
+
+If a service is SLOW (>2s):
+```
+  Quiz2Biz         http://localhost:3001         SLOW     2340ms   —
+  ⚠ Quiz2Biz responding slowly — check container health
+```
+
+## ACTION: sync governance — Governance Consistency (Enhanced)
+
+In addition to the existing governance sync, now also handles cross-project ADR propagation:
+
+### Cross-Project ADR Propagation
+
+When reading decisions from each project, check for decisions tagged with portfolio scope:
+
+```yaml
+# Example ADR with portfolio scope
+id: ADR-015
+scope: portfolio                    # NEW — signals cross-project relevance
+affects: [agent-mvp, quiz2biz]     # NEW — which projects need to know
+decision: "Standardize on JWT RS256 for all service-to-service auth"
+```
+
+When `/ezra:multi sync governance` finds a `scope: portfolio` decision:
+
+1. For each project listed in `affects`:
+   - Check if the project's `.ezra/notifications/` directory exists (create if not)
+   - Write a notification file: `.ezra/notifications/cross-adr-{source-project}-{adr-id}.yaml`
+   - Content:
+     ```yaml
+     type: cross-project-adr
+     source_project: quiz2biz
+     adr_id: ADR-015
+     decision: "Standardize on JWT RS256 for all service-to-service auth"
+     date: <ISO>
+     action_required: "Review and acknowledge this portfolio-level decision"
+     acknowledged: false
+     ```
+
+2. Report:
+   ```
+   CROSS-PROJECT ADR PROPAGATION
+   ═══════════════════════════════
+   ADR-015 from Quiz2Biz → Notified: Agent MVP, MAH SDK
+   ADR-008 from Agent MVP → Already acknowledged by Quiz2Biz
+   ```
+
+When `/ezra:health` runs on a project with unacknowledged notifications in `.ezra/notifications/`, it flags them:
+```
+⚠ 1 unacknowledged cross-project decision:
+  ADR-015 (from Quiz2Biz): "Standardize on JWT RS256 for all service-to-service auth"
+  Run /ezra:status to review and acknowledge
+```
 
 ## Portfolio Config Location
 

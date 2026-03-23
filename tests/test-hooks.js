@@ -38,6 +38,7 @@ const EXPECTED_HOOKS = [
   'ezra-dash-hook.js',
   'ezra-drift-hook.js',
   'ezra-version-hook.js',
+  'ezra-avios-bridge.js',
 ];
 
 for (const hook of EXPECTED_HOOKS) {

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node tests/run-tests.js)",
+      "Bash(node -e \"const fs = require\\(''fs''\\); const c = fs.readFileSync\\(''commands/ezra/init.md'',''utf8''\\); console.log\\(''First 100 chars repr:'', JSON.stringify\\(c.slice\\(0,100\\)\\)\\); console.log\\(''Has CRLF:'', c.includes\\(''\\\\r\\\\n''\\)\\); console.log\\(''Starts with ---:'', c.startsWith\\(''---''\\)\\); const m = c.match\\(/^---\\\\r?\\\\n\\([\\\\s\\\\S]*?\\)\\\\r?\\\\n---/\\); console.log\\(''Regex match:'', !!m\\);\")",
+      "Bash(node -e \"const fs = require\\(''fs''\\); const c = fs.readFileSync\\(''commands/ezra/init.md'',''utf8''\\); console.log\\(''Has CRLF:'', c.includes\\(String.fromCharCode\\(13,10\\)\\)\\); console.log\\(''Starts with ---:'', c.startsWith\\(''---''\\)\\); const m = c.match\\(/^---\\\\r?\\\\n\\([\\\\s\\\\S]*?\\)\\\\r?\\\\n---/\\); console.log\\(''Regex match:'', m !== null\\);\")",
+      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''commands/ezra/init.md'',''utf8''\\);console.log\\(JSON.stringify\\(c.slice\\(0,30\\)\\)\\)\")",
+      "Bash(git config:*)",
+      "Bash(node -e \":*)",
+      "Bash(node tests/lint-all.js)",
+      "Bash(node tests/test-e2e.js)",
+      "Bash(npx vitest:*)"
+    ]
+  }
+}
