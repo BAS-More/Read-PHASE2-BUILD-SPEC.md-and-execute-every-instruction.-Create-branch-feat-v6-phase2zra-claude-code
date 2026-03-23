@@ -10,3 +10,6 @@ dist/
 
 # Prevent worktree submodule references from breaking CI
 .claude/worktrees/
+
+# Build specs (local only, not tracked)
+PHASE*-BUILD-SPEC.md
