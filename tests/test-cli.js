@@ -35,12 +35,12 @@ function runCli(args, opts) {
 
 test('--version returns version string', () => {
   const output = runCli('--version');
-  assert(output.trim() === '4.0.0', `Expected "4.0.0", got "${output.trim()}"`);
+  assert(output.trim() === '5.0.0', `Expected "5.0.0", got "${output.trim()}"`);
 });
 
 test('-v returns version string', () => {
   const output = runCli('-v');
-  assert(output.trim() === '4.0.0', `Expected "4.0.0", got "${output.trim()}"`);
+  assert(output.trim() === '5.0.0', `Expected "5.0.0", got "${output.trim()}"`);
 });
 
 // ─── Help ────────────────────────────────────────────────────────

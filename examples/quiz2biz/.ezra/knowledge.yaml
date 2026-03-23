@@ -1,0 +1,56 @@
+architecture:
+  language: TypeScript
+  framework: NestJS (API) + React 19 (Web)
+  pattern: Monorepo with Turbo
+  database: PostgreSQL 16 via Prisma ORM
+  cache: Redis
+  deployment: Azure Container Apps
+  ci_cd: Azure DevOps Pipelines
+  infrastructure: Terraform
+  container_registry: Azure ACR
+confidence: HIGH
+last_scan: "2026-03-22T08:12:00Z"
+entry_points:
+  api: apps/api/src/main.ts
+  web: apps/web/src/main.tsx
+  cli: apps/cli/src/index.ts
+layers:
+  api: apps/api (NestJS, port 3000, prefix /api/v1)
+  web: apps/web (React + Vite)
+  cli: apps/cli
+  database: libs/database (Prisma)
+  redis: libs/redis
+  shared: libs/shared
+  prisma: prisma/ (schema + migrations)
+  docker: docker/ (api, web Dockerfiles)
+  infra: infrastructure/terraform/
+dependencies:
+  runtime:
+    - "@nestjs/core"
+    - "@nestjs/common"
+    - "@prisma/client"
+    - react
+    - react-dom
+    - ioredis
+  dev:
+    - typescript
+    - vitest
+    - playwright
+    - eslint
+    - turbo
+    - prisma
+test_infrastructure:
+  framework: vitest
+  e2e: playwright
+  config: jest.config.js
+  coverage_target: 80
+risks:
+  - area: prisma/migrations
+    severity: high
+    reason: Schema changes affect production database
+  - area: infrastructure/terraform
+    severity: high
+    reason: IaC changes affect Azure deployment
+  - area: apps/api/src/auth
+    severity: critical
+    reason: Authentication logic is security-critical

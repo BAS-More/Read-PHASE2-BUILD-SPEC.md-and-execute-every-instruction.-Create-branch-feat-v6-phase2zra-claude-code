@@ -34,8 +34,8 @@ Run all: `node tests/run-tests.js`
 - `test-e2e.js` — End-to-end flows in temp directories
 - `test-uat.js` — Alpha/Beta/UAT acceptance tests
 
-## Commands (19 current)
-/ezra:init, /ezra:scan, /ezra:guard, /ezra:reconcile, /ezra:decide, /ezra:review, /ezra:status, /ezra:help, /ezra:doc, /ezra:dash, /ezra:doc-check, /ezra:doc-sync, /ezra:doc-approve, /ezra:version, /ezra:health, /ezra:advisor, /ezra:process, /ezra:auto, /ezra:multi
+## Commands (23 current)
+/ezra:init, /ezra:scan, /ezra:guard, /ezra:reconcile, /ezra:decide, /ezra:review, /ezra:status, /ezra:help, /ezra:doc, /ezra:dash, /ezra:doc-check, /ezra:doc-sync, /ezra:doc-approve, /ezra:version, /ezra:health, /ezra:advisor, /ezra:process, /ezra:auto, /ezra:multi, /ezra:bootstrap, /ezra:claude-md, /ezra:agents, /ezra:sync
 
 ## Build Spec
 See `EZRA_V5_BUILD_SPEC.md` for the full v5.0.0 enhancement specification (12 features).

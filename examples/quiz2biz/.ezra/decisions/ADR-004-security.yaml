@@ -1,0 +1,23 @@
+id: ADR-004
+status: ACTIVE
+date: "2026-02-01"
+category: SECURITY
+decision: "All database queries must use parameterized queries — no string concatenation in SQL"
+context: "Quiz2Biz processes user-generated questionnaire input that flows directly into database queries. SQL injection is the #1 web application vulnerability per OWASP Top 10:2021 (A03:Injection)."
+rationale: "OWASP Top 10 SQL injection prevention, mandatory per project standards. Parameterized queries ensure user input is never interpreted as SQL syntax. Combined with Prisma ORM (ADR-002), this provides defense-in-depth."
+consequences:
+  positive:
+    - "Eliminates SQL injection attack vectors"
+    - "Prisma client enforces parameterized queries by default"
+    - "Aligns with NIST SSDF and OWASP secure coding practices"
+    - "Simplifies security audit — no manual query string inspection needed"
+  negative:
+    - "Complex dynamic queries require Prisma raw query syntax with tagged templates"
+    - "Developers must avoid the temptation of string interpolation for convenience"
+enforcement:
+  affected_paths:
+    - "apps/api/**"
+    - "libs/database/**"
+    - "prisma/**"
+  check_description: "No string concatenation or template literal interpolation in SQL/database queries. All queries must use Prisma client methods or Prisma.$queryRaw with tagged template literals. Static analysis must flag any raw SQL string construction."
+  auto_enforced: true

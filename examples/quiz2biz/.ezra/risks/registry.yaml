@@ -1,0 +1,99 @@
+# EZRA Risk Registry — Quiz2Biz
+# Generated: 2026-03-22
+# Source: ezra-reviewer security scan + ezra-reconciler audit
+
+risks:
+  - id: RISK-001
+    title: MFA secrets stored in plaintext
+    severity: high
+    category: security
+    module: apps/api/src/modules/auth/mfa
+    description: >
+      TOTP secrets and backup codes are stored as plaintext strings in the
+      database (User.mfaSecret, User.backupCodes). If the database is
+      compromised, all MFA secrets are immediately usable.
+    mitigation: Encrypt MFA secrets at rest using AES-256-GCM with a key from Azure Key Vault.
+    status: open
+    raised: 2026-03-22
+    owner: security-team
+
+  - id: RISK-002
+    title: Password reset lacks complexity validation
+    severity: medium
+    category: security
+    module: apps/api/src/modules/auth
+    description: >
+      The password reset flow does not enforce minimum password complexity
+      beyond basic length checks. Production passwords should enforce
+      uppercase, lowercase, digit, and special character requirements.
+    mitigation: Add Zod or class-validator password complexity rules to resetPassword DTO.
+    status: open
+    raised: 2026-03-22
+    owner: security-team
+
+  - id: RISK-003
+    title: Rapid Prisma schema evolution (33 models, 10 migrations)
+    severity: medium
+    category: data-integrity
+    module: prisma/
+    description: >
+      The schema has grown to 33 models with 14 enums across 10 migrations
+      in a short development period. Rapid schema changes increase the risk
+      of migration conflicts, data loss, and production rollback complexity.
+    mitigation: >
+      Establish a schema change review gate. Require ADR for any migration
+      adding >3 models or altering existing columns with data.
+    status: open
+    raised: 2026-03-22
+    owner: engineering-lead
+
+  - id: RISK-004
+    title: GitHub Packages token not available for CI/local
+    severity: medium
+    category: supply-chain
+    module: .npmrc
+    description: >
+      The @bas-more/orchestrator package required GH_PACKAGES_TOKEN for
+      npm install. The dead dependency and all GH_PACKAGES_TOKEN references
+      have been removed from package.json, .npmrc, Dockerfiles, and CI workflows.
+    mitigation: >
+      RESOLVED: @bas-more/orchestrator removed from package.json.
+      GH_PACKAGES_TOKEN removed from .npmrc, Dockerfiles, and all CI workflows.
+    status: resolved
+    raised: 2026-03-22
+    resolved: 2026-03-23
+    owner: devops
+
+  - id: RISK-005
+    title: Transitive dependency vulnerabilities (20 moderate)
+    severity: medium
+    category: supply-chain
+    module: package.json
+    description: >
+      npm audit reports 20 moderate vulnerabilities after removing the
+      @bas-more/orchestrator dependency (which carried 3 high-severity
+      transitive deps). The remaining vulnerabilities are in transitive
+      dependencies of actively used packages.
+    mitigation: >
+      GH_PACKAGES_TOKEN blocker removed. npm install now succeeds without
+      private registry auth. Run npm audit fix to address remaining issues.
+      Add npm audit to CI pipeline as a blocking gate for high/critical vulns.
+    status: mitigating
+    raised: 2026-03-22
+    owner: devops
+
+  - id: RISK-006
+    title: Terraform state drift — no remote backend configured
+    severity: medium
+    category: infrastructure
+    module: infrastructure/terraform/
+    description: >
+      Terraform state is local (tfstate files). Without a remote backend
+      (Azure Storage), state can drift between team members and there is
+      no locking to prevent concurrent applies.
+    mitigation: >
+      Configure azurerm backend with Azure Storage Account for remote state.
+      Enable state locking.
+    status: open
+    raised: 2026-03-22
+    owner: devops

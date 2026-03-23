@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict';
 
 /**
  * EZRA Guard Hook — PreToolUse hook for Write/Edit operations

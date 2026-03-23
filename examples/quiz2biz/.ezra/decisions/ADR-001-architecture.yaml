@@ -1,0 +1,25 @@
+id: ADR-001
+status: ACTIVE
+date: "2026-01-15"
+category: ARCHITECTURE
+decision: "Use NestJS for API and React 19 for frontend in a Turbo monorepo"
+context: "Quiz2Biz requires a full-stack TypeScript platform with strict typing, clear separation between API and UI, and scalable build orchestration across packages"
+rationale: "TypeScript across the stack, proven patterns, team familiarity. NestJS provides structured backend with dependency injection. React 19 delivers modern UI with concurrent features. Turbo enables efficient monorepo builds."
+consequences:
+  positive:
+    - "Single language across the entire stack reduces context switching"
+    - "NestJS module system enforces clean separation of concerns"
+    - "Turbo caching dramatically speeds up incremental builds"
+    - "Shared libs (database, redis, shared) avoid code duplication"
+  negative:
+    - "Monorepo complexity increases CI/CD configuration overhead"
+    - "NestJS decorator-heavy style has a learning curve"
+    - "Tight coupling between packages if boundaries are not enforced"
+enforcement:
+  affected_paths:
+    - "apps/api/**"
+    - "apps/web/**"
+    - "libs/**"
+    - "turbo.json"
+  check_description: "API code must use NestJS modules/controllers/services pattern. Frontend must use React 19 functional components. All code must be TypeScript strict mode."
+  auto_enforced: true

@@ -1,0 +1,65 @@
+timestamp: "2026-03-22T05:44:41Z"
+type: health
+health_score: 91
+overall_grade: A
+pillars:
+  on_track:
+    score: 88
+    weight: 25
+    findings:
+      - "PASS: 4 ADRs recorded and actively maintained"
+      - "PASS: Sprint plan registered (Q1 2026 Close, 85% complete)"
+      - "PASS: 2 health scans completed"
+      - "WARN: 1 plan item still in progress (health score A target)"
+  no_gaps:
+    score: 95
+    weight: 20
+    findings:
+      - "PASS: All 7 critical documents present and current"
+      - "PASS: PRD, TAD, deploy-runbook, api-spec, test-strategy, security-arch, ADRs"
+      - "PASS: CLAUDE.md comprehensive project instructions"
+      - "PASS: 145 test files across apps/api/src"
+  clean:
+    score: 88
+    weight: 15
+    findings:
+      - "PASS: TypeScript strict mode enabled (strict, strictNullChecks, strictPropertyInitialization)"
+      - "PASS: Monorepo with Turbo — clean separation (3 apps + 4 libs)"
+      - "PASS: Prisma ORM enforces type-safe queries"
+      - "WARN: Some files may contain TODO/FIXME comments"
+  secure:
+    score: 90
+    weight: 25
+    findings:
+      - "PASS: .env in .gitignore"
+      - "PASS: Prisma ORM enforces parameterized queries (ADR-004)"
+      - "PASS: Azure Key Vault for secrets management"
+      - "PASS: Security architecture document comprehensive (STRIDE model, OWASP)"
+      - "WARN: npm audit shows 3 high, 17 moderate vulnerabilities (transitive deps)"
+      - "PASS: 0 critical vulnerabilities"
+  best_practices:
+    score: 92
+    weight: 15
+    findings:
+      - "PASS: Azure Pipelines CI/CD configured"
+      - "PASS: 27 Terraform files for IaC"
+      - "PASS: Docker configs for api, web, postgres"
+      - "PASS: Structured monorepo with clear separation"
+      - "PASS: EZRA governance framework active with 4 hooks"
+      - "PASS: MCP Bridge for remote monitoring"
+npm_audit:
+  critical: 0
+  high: 3
+  moderate: 17
+  low: 0
+  note: "3 high in transitive deps of private @bas-more/orchestrator package"
+summary:
+  critical: 0
+  high: 1
+  medium: 2
+  low: 1
+  top_actions:
+    - "Fix 3 high npm audit vulnerabilities when orchestrator package is updated"
+    - "Complete EZRA health score A target (in progress)"
+    - "Set up automated test coverage reporting"
+    - "Review and resolve TODO/FIXME comments in source"

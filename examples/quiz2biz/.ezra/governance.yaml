@@ -1,0 +1,38 @@
+name: Quiz2Biz
+project_phase: dev
+description: AI-powered adaptive questionnaire platform that generates business documents through conversational chat
+protected_paths:
+  - pattern: "prisma/migrations/**"
+    reason: "Database migrations must be reviewed — direct schema changes affect production"
+  - pattern: "infrastructure/terraform/**"
+    reason: "Infrastructure changes require approval — affects Azure deployment"
+  - pattern: "docker/**"
+    reason: "Docker configuration changes affect deployment pipeline"
+  - pattern: ".env*"
+    reason: "Environment files may contain secrets"
+  - pattern: "apps/api/src/modules/auth/**"
+    reason: "Authentication module changes are security-critical"
+standards:
+  strict_typescript: true
+  no_any_types: true
+  minimum_test_coverage: 80
+  owasp_compliance: true
+  parameterized_queries: true
+enforcement:
+  require_decision_for_protected_paths: true
+  block_on_unrecorded_changes: false
+  auto_version_on_state_change: true
+drift:
+  warn_threshold: 5
+  block_threshold: 15
+  tracked_categories:
+    - prisma_schema
+    - api_routes
+    - auth_module
+    - terraform
+    - docker
+avios_integration:
+  enabled: true
+  sync_decisions: true
+  sync_governance: true
+  sync_on_hook: true

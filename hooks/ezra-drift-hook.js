@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict';
 
 /**
  * EZRA Document Drift Detection Hook
