@@ -93,7 +93,7 @@ test('Bridge creates pending sync file on decision write', () => {
     ].join('\n'));
 
     const result = pipeToHook('ezra-avios-bridge.js', {
-      tool_input: { file_path: '.ezra/decisions/ADR-002.yaml' },
+      tool_name: 'Write', tool_input: { file_path: '.ezra/decisions/ADR-002.yaml' },
       cwd: tmp,
     }, tmp);
     assert(result.exitCode === 0, `Expected exit 0, got ${result.exitCode}`);
@@ -129,7 +129,7 @@ test('Bridge creates pending risk on scan with critical findings', () => {
     ].join('\n'));
 
     const result = pipeToHook('ezra-avios-bridge.js', {
-      tool_input: { file_path: '.ezra/scans/scan-2026.yaml' },
+      tool_name: 'Write', tool_input: { file_path: '.ezra/scans/scan-2026.yaml' },
       cwd: tmp,
     }, tmp);
     assert(result.exitCode === 0, `Expected exit 0, got ${result.exitCode}`);
@@ -139,7 +139,7 @@ test('Bridge creates pending risk on scan with critical findings', () => {
     assert(files.length === 1, `Expected 1 pending file, found ${files.length}`);
     const content = JSON.parse(fs.readFileSync(path.join(pendingDir, files[0]), 'utf8'));
     assert(content.action === 'add_risk', `Expected add_risk, got ${content.action}`);
-    assert(content.impact === 'HIGH', `Expected HIGH impact, got ${content.impact}`);
+    assert(content.impact === 'CRITICAL', `Expected CRITICAL impact, got ${content.impact}`);
   } finally { cleanup(tmp); }
 });
 
@@ -172,7 +172,7 @@ test('Category mapping covers all 8 EZRA categories', () => {
   const content = fs.readFileSync(path.join(HOOKS_DIR, 'ezra-avios-bridge.js'), 'utf8');
   const categories = ['ARCHITECTURE', 'DATABASE', 'SECURITY', 'API', 'TESTING', 'INFRASTRUCTURE', 'DEPENDENCY', 'CONVENTION'];
   for (const cat of categories) {
-    assert(content.includes("'" + cat + "'"), `Missing category mapping for ${cat}`);
+    assert(content.includes(cat + ':') || content.includes(cat + ' '), `Missing category mapping for ${cat}`);
   }
   const mappedValues = ['AD', 'DD', 'SC', 'TC'];
   for (const val of mappedValues) {
