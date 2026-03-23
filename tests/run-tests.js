@@ -20,6 +20,7 @@ const SUITES = [
   { name: 'V6-Oversight', script: 'test-v6-oversight.js' },
   { name: 'V6-PM', script: 'test-v6-pm.js' },
   { name: 'V6-Settings-Writer', script: 'test-v6-settings-writer.js' },
+  { name: 'V6-Library', script: 'test-v6-library.js' },
 ];
 
 const testsDir = __dirname;

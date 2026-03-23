@@ -10,7 +10,7 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D16.7-brightgreen)](https://nodejs.org)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)](https://github.com/BAS-More/ezra-claude-code)
 
-EZRA is a multi-agent codebase governance framework for [Claude Code](https://claude.ai/code). It provides 29 slash commands, 4 subagents, 8 lifecycle hooks, 55 SDLC document types, 5-pillar health enforcement, autonomous process execution with guard rails, and multi-project portfolio orchestration.
+EZRA is a multi-agent codebase governance framework for [Claude Code](https://claude.ai/code). It provides 31 slash commands, 4 subagents, 9 lifecycle hooks, 55 SDLC document types, 5-pillar health enforcement, autonomous process execution with guard rails, and multi-project portfolio orchestration.
 
 ### Identity
 
@@ -45,9 +45,9 @@ npx ezra-claude-code --claude --local
 
 | Capability | Description |
 |-----------|-------------|
-| **29 Slash Commands** | Governance, documents, dashboard, processes, autonomous execution, multi-project, real-time oversight |
+| **31 Slash Commands** | Governance, documents, dashboard, processes, autonomous execution, multi-project, real-time oversight |
 | **4 Subagents** | Architect, Reviewer, Guardian, Reconciler — dispatched in parallel |
-| **8 Auto-Hooks** | Protected path guard, session dashboard, document drift detection, version tracking, AVI-OS bridge, settings parser, real-time oversight |
+| **9 Auto-Hooks** | Protected path guard, session dashboard, document drift detection, version tracking, AVI-OS bridge, settings parser, real-time oversight |
 | **55 Document Types** | Full SDLC coverage from business case through decommissioning |
 | **5-Pillar Health** | On-Track, No Gaps, Clean, Secure, Best Practices (scored 0-100) |
 | **Process Engine** | Adjustable step-by-step workflows saved as portable templates |
@@ -123,6 +123,8 @@ npx ezra-claude-code --claude --local
 /ezra:oversight     Real-time agent oversight — monitor, warn, gate, strict
 /ezra:settings      Unified settings management for all EZRA configuration
 /ezra:compliance    Compliance profiles — ISO 25010, OWASP, SOC2, HIPAA, PCI-DSS, GDPR, WCAG
+/ezra:library       Best practice library — browse, search, add across 14 categories
+/ezra:research      Research agent control — automated best practice discovery — ISO 25010, OWASP, SOC2, HIPAA, PCI-DSS, GDPR, WCAG
 ```
 
 ## Health Pillars
@@ -208,6 +210,7 @@ After installation, add hooks to your `settings.json` for automatic enforcement:
 | `ezra-settings.js` | Utility | Unified settings parser for `.ezra/settings.yaml` |
 | `ezra-oversight.js` | PreToolUse | Real-time agent oversight with 4 intervention levels |
 | `ezra-settings-writer.js` | Utility | Settings write-back engine for .ezra/settings.yaml |
+| `ezra-library.js` | Utility | Best practice library engine with 14 categories |
 
 The installer prints the exact JSON configuration after install.
 

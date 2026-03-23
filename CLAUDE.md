@@ -34,8 +34,8 @@ Run all: `node tests/run-tests.js`
 - `test-e2e.js` — End-to-end flows in temp directories
 - `test-uat.js` — Alpha/Beta/UAT acceptance tests
 
-## Commands (29 current)
-/ezra:init, /ezra:scan, /ezra:guard, /ezra:reconcile, /ezra:decide, /ezra:review, /ezra:status, /ezra:help, /ezra:doc, /ezra:dash, /ezra:doc-check, /ezra:doc-sync, /ezra:doc-approve, /ezra:version, /ezra:health, /ezra:advisor, /ezra:process, /ezra:auto, /ezra:multi, /ezra:bootstrap, /ezra:claude-md, /ezra:agents, /ezra:sync, /ezra:oversight, /ezra:settings, /ezra:learn, /ezra:pm, /ezra:progress, /ezra:compliance
+## Commands (31 current)
+/ezra:init, /ezra:scan, /ezra:guard, /ezra:reconcile, /ezra:decide, /ezra:review, /ezra:status, /ezra:help, /ezra:doc, /ezra:dash, /ezra:doc-check, /ezra:doc-sync, /ezra:doc-approve, /ezra:version, /ezra:health, /ezra:advisor, /ezra:process, /ezra:auto, /ezra:multi, /ezra:bootstrap, /ezra:claude-md, /ezra:agents, /ezra:sync, /ezra:oversight, /ezra:settings, /ezra:learn, /ezra:pm, /ezra:progress, /ezra:compliance, /ezra:library, /ezra:research
 
 ## Build Spec
 See `EZRA_V5_BUILD_SPEC.md` and `PHASE1-BUILD-SPEC.md` for full enhancement specifications.

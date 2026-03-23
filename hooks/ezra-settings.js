@@ -93,6 +93,15 @@ const DEFAULTS = {
     weekly_report: true,
     milestones: [],
   },
+  library: {
+    research_enabled: true,
+    update_frequency: 'weekly',
+    budget_monthly: 10.00,
+    sources_whitelist: ['owasp.org', 'developer.mozilla.org', 'react.dev', 'nodejs.org', 'typescriptlang.org', 'nist.gov', 'github.com/advisories'],
+    auto_add_rules: false,
+    alert_on_new_cve: true,
+    categories_monitored: ['all'],
+  },
 };
 
 // ─── YAML Parser (simple, no deps) ──────────────────────────────
@@ -294,6 +303,10 @@ function getProjectManager(projectDir) {
   return loadSettings(projectDir).project_manager;
 }
 
+
+function getLibrary(projectDir) {
+  return loadSettings(projectDir).library;
+}
 // ─── Exports (for require()) ─────────────────────────────────────
 
 module.exports = {
@@ -305,6 +318,7 @@ module.exports = {
   getWorkflows,
   getSelfLearning,
   getProjectManager,
+  getLibrary,
   parseYamlSimple,
   parseValue,
   deepMerge,

@@ -60,6 +60,8 @@ EZRA persists state in `.ezra/` at the project root:
 - `/ezra:pm` — Project management with milestones, deliverables, and tracking
 - `/ezra:progress` — Track milestone progress and generate reports
 - `/ezra:compliance` — Manage compliance profiles (ISO-25010, OWASP-2025, SOC2, HIPAA, PCI-DSS, GDPR, WCAG-AA)
+- `/ezra:library` — Best practice library: browse, search, add, export across 14 categories
+- `/ezra:research` — Research agent control: configure automated best practice discovery (ISO-25010, OWASP-2025, SOC2, HIPAA, PCI-DSS, GDPR, WCAG-AA)
 
 ## Agent System
 
