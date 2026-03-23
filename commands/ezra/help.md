@@ -45,6 +45,7 @@ REAL-TIME OVERSIGHT
   /ezra:library       Best practice library — browse, search, add across 14 categories
   /ezra:research      Research agent control — automated best practice discovery
   /ezra:portfolio — Cross-project portfolio health dashboard
+/ezra:workflow — Enhanced workflow template system
 /ezra:handoff — Generate session handoff briefing
 /ezra:cost          Cost tracking and budget management for AI agent usage
 

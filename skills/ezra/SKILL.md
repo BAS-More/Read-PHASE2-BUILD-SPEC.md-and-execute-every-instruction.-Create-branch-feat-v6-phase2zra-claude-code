@@ -62,6 +62,7 @@ EZRA persists state in `.ezra/` at the project root:
 - `/ezra:library` — Best practice library: browse, search, add, export across 14 categories
 - `/ezra:research` — Research agent control: configure automated best practice discovery
 - `/ezra:portfolio — Portfolio health dashboard
+- /ezra:workflow — Enhanced workflow templates
 - /ezra:handoff — Session handoff export
 - /ezra:cost` — Cost tracking and budget management for AI agent usage
 
