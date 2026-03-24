@@ -152,6 +152,10 @@ function addMemory(projectDir, entry) {
   };
   
   writeYaml(filePath, record);
+  
+  // Auto-prune: enforce MAX_ENTRIES_PER_TYPE
+  pruneType(projectDir, entry.type);
+  
   updateIndex(projectDir);
   
   return { id: id, path: filePath, type: entry.type };
@@ -181,6 +185,37 @@ function deleteMemory(projectDir, type, id) {
   fs.unlinkSync(filePath);
   updateIndex(projectDir);
   return { deleted: type + '/' + id };
+}
+
+/**
+ * Prune oldest low-priority entries when a type exceeds MAX_ENTRIES_PER_TYPE.
+ */
+function pruneType(projectDir, type) {
+  const typeDir = path.join(getMemoryDir(projectDir), type);
+  if (!fs.existsSync(typeDir)) return;
+  const files = fs.readdirSync(typeDir).filter(f => f.endsWith('.yaml'));
+  if (files.length <= MAX_ENTRIES_PER_TYPE) return;
+  
+  // Read all entries with their created timestamps
+  const entries = files.map(f => {
+    const data = readYaml(path.join(typeDir, f));
+    return { file: f, created: data.created || '', priority: data.priority || 'medium' };
+  });
+  
+  // Sort: low priority first, then oldest first
+  const priorityOrder = { low: 0, medium: 1, high: 2, critical: 3 };
+  entries.sort((a, b) => {
+    const pa = priorityOrder[a.priority] || 1;
+    const pb = priorityOrder[b.priority] || 1;
+    if (pa !== pb) return pa - pb;
+    return String(a.created).localeCompare(String(b.created));
+  });
+  
+  // Remove excess entries
+  const excess = entries.length - MAX_ENTRIES_PER_TYPE;
+  for (let i = 0; i < excess; i++) {
+    try { fs.unlinkSync(path.join(typeDir, entries[i].file)); } catch { /* skip */ }
+  }
 }
 
 // ─── Listing & Search ────────────────────────────────────────────
@@ -377,6 +412,7 @@ module.exports = {
   getMemory,
   updateMemory,
   deleteMemory,
+  pruneType,
   listMemories,
   searchMemory,
   getRelevantMemories,
