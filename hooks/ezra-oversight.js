@@ -105,6 +105,15 @@ function matchGlob(filePath, pattern) {
   }
 }
 
+// ─── ReDoS Guard ─────────────────────────────────────────────────
+
+function isSafeRegex(pattern) {
+  if (pattern.length > 200) return false;
+  // Reject nested quantifiers: (a+)+, (a*)+, (a{1,})*
+  if (/(\+|\*|\})\s*\)(\+|\*|\{)/.test(pattern)) return false;
+  return true;
+}
+
 // ─── Violation Checks ────────────────────────────────────────────
 
 /**
@@ -170,7 +179,7 @@ function runChecks(content, filePath, cwd) {
   // Standards custom rules
   if (Array.isArray(standards.custom_rules)) {
     for (const rule of standards.custom_rules) {
-      if (typeof rule === 'string' && rule.trim()) {
+      if (typeof rule === 'string' && rule.trim() && isSafeRegex(rule)) {
         try {
           const re = new RegExp(rule);
           for (let i = 0; i < lines.length; i++) {
@@ -250,7 +259,7 @@ function runChecks(content, filePath, cwd) {
   // Security custom rules
   if (Array.isArray(security.custom_rules)) {
     for (const rule of security.custom_rules) {
-      if (typeof rule === 'string' && rule.trim()) {
+      if (typeof rule === 'string' && rule.trim() && isSafeRegex(rule)) {
         try {
           const re = new RegExp(rule);
           for (let i = 0; i < lines.length; i++) {
@@ -291,6 +300,8 @@ function runChecks(content, filePath, cwd) {
 
 // ─── Violation Logger ────────────────────────────────────────────
 
+const MAX_LOG_SIZE = 1024 * 1024; // 1 MB log rotation threshold
+
 function logViolations(cwd, violations, filePath) {
   if (violations.length === 0) return;
   const oversightDir = path.join(cwd, '.ezra', 'oversight');
@@ -299,6 +310,15 @@ function logViolations(cwd, violations, filePath) {
       fs.mkdirSync(oversightDir, { recursive: true });
     }
     const logPath = path.join(oversightDir, 'violations.log');
+    // Rotate log if it exceeds threshold
+    if (fs.existsSync(logPath)) {
+      const stats = fs.statSync(logPath);
+      if (stats.size > MAX_LOG_SIZE) {
+        const rotated = logPath + '.1';
+        try { fs.unlinkSync(rotated); } catch { /* no previous rotation */ }
+        fs.renameSync(logPath, rotated);
+      }
+    }
     const timestamp = new Date().toISOString();
     const lines = violations.map(v =>
       `[${timestamp}] ${v.severity.toUpperCase()} ${v.code}: ${v.message} (${filePath})`
@@ -360,14 +380,19 @@ module.exports = {
   logViolations,
   matchGlob,
   loadOversightSettings,
+  isSafeRegex,
 };
 
 // ─── Hook Protocol (stdin → stdout → exit 0) ─────────────────────
 
 if (require.main === module) {
+  const MAX_STDIN = 1024 * 1024; // 1 MB stdin limit
   let input = '';
   process.stdin.setEncoding('utf8');
-  process.stdin.on('data', chunk => input += chunk);
+  process.stdin.on('data', chunk => {
+    input += chunk;
+    if (input.length > MAX_STDIN) { process.exit(0); }
+  });
   process.stdin.on('end', () => {
     try {
       const event = JSON.parse(input);
@@ -387,6 +412,13 @@ if (require.main === module) {
       }
 
       const cwd = event.cwd || process.cwd();
+
+      // Path traversal guard — resolved path must stay within cwd
+      const resolvedPath = path.resolve(cwd, filePath);
+      if (!resolvedPath.startsWith(path.resolve(cwd) + path.sep) && resolvedPath !== path.resolve(cwd)) {
+        process.exit(0);
+        return;
+      }
       const ezraDir = path.join(cwd, '.ezra');
 
       // Quick exit if EZRA not initialized
