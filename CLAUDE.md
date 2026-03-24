@@ -30,12 +30,26 @@ Run all: `node tests/run-tests.js`
 - `test-hooks.js` — Hook syntax, stdin handling, graceful failure
 - `test-cli.js` — CLI install/uninstall logic
 - `test-templates.js` — Template YAML validation
+- `test-avios-bridge.js` — AVI-OS bridge hook protocol
+- `test-v6-oversight.js` — Oversight engine and violation tracking
+- `test-v6-pm.js` — Project management and milestones
+- `test-v6-settings-writer.js` — Settings persistence
+- `test-v6-settings-roundtrip.js` — Settings read/write roundtrip
+- `test-v6-library.js` — Best practice library
+- `test-v6-agents.js` — Agent orchestration
+- `test-v6-dashboard-data.js` — Dashboard data aggregation
+- `test-v6-workflows.js` — Workflow template engine
+- `test-v6-memory.js` — Agent memory system
+- `test-v6-planner.js` — Planning engine
+- `test-v6-integration.js` — Cross-hook integration
+- `test-v6-license.js` — License management
+- `test-v6-agents-real.js` — Agent real-world scenarios
 - `lint-all.js` — Code quality (strict mode, no console.error, proper exit codes)
 - `test-e2e.js` — End-to-end flows in temp directories
 - `test-uat.js` — Alpha/Beta/UAT acceptance tests
 
 ## Commands (39 current)
-/ezra:init, /ezra:scan, /ezra:guard, /ezra:reconcile, /ezra:decide, /ezra:review, /ezra:status, /ezra:help, /ezra:doc, /ezra:dash, /ezra:doc-check, /ezra:doc-sync, /ezra:doc-approve, /ezra:version, /ezra:health, /ezra:advisor, /ezra:process, /ezra:auto, /ezra:multi, /ezra:bootstrap, /ezra:claude-md, /ezra:agents, /ezra:sync, /ezra:oversight, /ezra:settings, /ezra:learn, /ezra:pm, /ezra:progress, /ezra:compliance, /ezra:library, /ezra:research, /ezra:cost, /ezra:portfolio, /ezra:handoff, /ezra:workflow, /ezra:memory, /ezra:plan, /ezra:license, /ezra:install, /ezra:workflow
+/ezra:init, /ezra:scan, /ezra:guard, /ezra:reconcile, /ezra:decide, /ezra:review, /ezra:status, /ezra:help, /ezra:doc, /ezra:dash, /ezra:doc-check, /ezra:doc-sync, /ezra:doc-approve, /ezra:version, /ezra:health, /ezra:advisor, /ezra:process, /ezra:auto, /ezra:multi, /ezra:bootstrap, /ezra:claude-md, /ezra:agents, /ezra:sync, /ezra:oversight, /ezra:settings, /ezra:learn, /ezra:pm, /ezra:progress, /ezra:compliance, /ezra:library, /ezra:research, /ezra:cost, /ezra:portfolio, /ezra:handoff, /ezra:workflow, /ezra:memory, /ezra:plan, /ezra:license, /ezra:install
 
 ## Build Spec
 See `EZRA_V5_BUILD_SPEC.md` and `PHASE1-BUILD-SPEC.md` for full enhancement specifications.

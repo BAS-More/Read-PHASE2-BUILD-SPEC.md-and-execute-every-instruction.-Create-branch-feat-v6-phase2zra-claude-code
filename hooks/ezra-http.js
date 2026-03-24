@@ -39,6 +39,9 @@ function httpsPost(url, body, headers) {
         resolve({ statusCode: res.statusCode, body: parsed });
       });
     });
+    req.setTimeout(15000, () => {
+      req.destroy(new Error('Request timed out after 15s'));
+    });
     req.on('error', reject);
     req.write(postData);
     req.end();
@@ -72,6 +75,9 @@ function httpsGet(url, headers) {
         try { parsed = JSON.parse(data); } catch (_) { parsed = data; }
         resolve({ statusCode: res.statusCode, body: parsed });
       });
+    });
+    req.setTimeout(15000, () => {
+      req.destroy(new Error('Request timed out after 15s'));
     });
     req.on('error', reject);
     req.end();

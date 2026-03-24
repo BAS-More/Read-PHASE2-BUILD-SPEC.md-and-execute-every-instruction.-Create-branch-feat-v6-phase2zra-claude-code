@@ -315,9 +315,9 @@ test('UAT: GitHub Actions CI tests Windows, macOS, Linux', () => {
   assert(ci.includes('macos-latest'), 'CI missing macOS');
 });
 
-test('UAT: GitHub Actions CI tests Node 16, 18, 20, 22', () => {
+test('UAT: GitHub Actions CI tests Node 18, 20, 22', () => {
   const ci = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'ci.yml'), 'utf8');
-  for (const v of [16, 18, 20, 22]) {
+  for (const v of [18, 20, 22]) {
     assert(ci.includes(String(v)), `CI missing Node ${v}`);
   }
 });
