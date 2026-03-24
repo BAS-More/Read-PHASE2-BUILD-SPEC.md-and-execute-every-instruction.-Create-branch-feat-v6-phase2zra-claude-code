@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">EZRA logo concept: Keeper of Standards</title>
+  <desc id="desc">A quill and Hebrew scroll in front of tablets of standards, representing Ezra as the keeper of law, order, and governance.</desc>
+  <defs>
+    <linearGradient id="bg" x1="108" y1="84" x2="408" y2="428" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#27425a"/>
+      <stop offset="1" stop-color="#101922"/>
+    </linearGradient>
+    <linearGradient id="bronze" x1="112" y1="96" x2="392" y2="416" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d9be7a"/>
+      <stop offset="0.5" stop-color="#b38a4c"/>
+      <stop offset="1" stop-color="#7c5928"/>
+    </linearGradient>
+    <linearGradient id="parchment" x1="136" y1="148" x2="388" y2="336" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fbf2d7"/>
+      <stop offset="0.5" stop-color="#ead7ab"/>
+      <stop offset="1" stop-color="#d4b77a"/>
+    </linearGradient>
+    <linearGradient id="stone" x1="140" y1="120" x2="366" y2="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d7d8da"/>
+      <stop offset="1" stop-color="#a8afb7"/>
+    </linearGradient>
+    <linearGradient id="feather" x1="238" y1="128" x2="386" y2="354" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f7f0df"/>
+      <stop offset="1" stop-color="#d6c6a2"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="256" cy="256" r="228" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="228" fill="none" stroke="url(#bronze)" stroke-width="12"/>
+  <circle cx="256" cy="256" r="198" fill="none" stroke="#7b6135" stroke-opacity="0.45" stroke-width="4"/>
+
+  <path d="M154 148 C154 118 176 100 206 100 C236 100 252 118 252 148 V258 H154 Z" fill="url(#stone)" stroke="#7d858f" stroke-width="8"/>
+  <path d="M260 148 C260 118 276 100 306 100 C336 100 358 118 358 148 V258 H260 Z" fill="url(#stone)" stroke="#7d858f" stroke-width="8"/>
+  <path d="M182 144 H222" fill="none" stroke="#8a9199" stroke-width="8" stroke-linecap="round"/>
+  <path d="M182 174 H222" fill="none" stroke="#8a9199" stroke-width="8" stroke-linecap="round"/>
+  <path d="M290 144 H330" fill="none" stroke="none"/>
+  <path d="M290 144 H330" fill="none" stroke="#8a9199" stroke-width="8" stroke-linecap="round"/>
+  <path d="M290 174 H330" fill="none" stroke="#8a9199" stroke-width="8" stroke-linecap="round"/>
+
+  <ellipse cx="172" cy="274" rx="30" ry="64" fill="url(#parchment)" stroke="#8c6937" stroke-width="8"/>
+  <ellipse cx="338" cy="274" rx="30" ry="64" fill="url(#parchment)" stroke="#8c6937" stroke-width="8"/>
+
+  <path
+    d="M174 204
+       C202 186 228 180 256 180
+       C284 180 310 186 338 204
+       L338 330
+       C310 348 284 354 256 354
+       C228 354 202 348 174 330
+       Z"
+    fill="url(#parchment)"
+    stroke="#8c6937"
+    stroke-width="8"
+  />
+
+  <path d="M216 228 H302" fill="none" stroke="#9c7a43" stroke-width="10" stroke-linecap="round" opacity="0.9"/>
+  <path d="M224 254 H292" fill="none" stroke="#a3824b" stroke-width="10" stroke-linecap="round" opacity="0.82"/>
+  <text
+    x="232"
+    y="300"
+    text-anchor="middle"
+    font-size="48"
+    font-family="'Noto Serif Hebrew', 'Times New Roman', serif"
+    font-weight="700"
+    fill="#6a4d28"
+    stroke="#f8eed0"
+    stroke-width="2"
+    paint-order="stroke fill"
+    direction="rtl"
+    unicode-bidi="bidi-override"
+    transform="rotate(-4 232 300)"
+  >עזרא</text>
+
+  <path
+    d="M342 136
+       C388 148 404 198 382 246
+       C359 295 318 335 260 366
+       C280 332 282 296 269 250
+       C255 206 271 148 342 136
+       Z"
+    fill="url(#feather)"
+    stroke="#76572f"
+    stroke-width="8"
+    stroke-linejoin="round"
+  />
+  <path d="M340 150 C331 194 314 247 282 311 C270 333 257 352 242 370" fill="none" stroke="#73542c" stroke-width="6" stroke-linecap="round"/>
+  <path d="M339 146 L206 366" fill="none" stroke="#5b4020" stroke-width="14" stroke-linecap="round"/>
+  <path d="M205 365 L179 408 L229 388 Z" fill="url(#bronze)" stroke="#5b4020" stroke-width="6" stroke-linejoin="round"/>
+</svg>
