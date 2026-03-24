@@ -372,7 +372,7 @@ test('Settings DEFAULTS includes agents section', () => {
   assert(settings.DEFAULTS.agents, 'agents section missing');
   assert(settings.DEFAULTS.agents.assignment_strategy === 'auto');
   assert(settings.DEFAULTS.agents.max_concurrent === 3);
-  assert(Array.isArray(settings.DEFAULTS.agents.providers));
+  assert(settings.DEFAULTS.agents.anthropic_model === 'claude-sonnet-4-20250514', 'anthropic_model should be set');
 });
 
 test('getAgents accessor works', () => {

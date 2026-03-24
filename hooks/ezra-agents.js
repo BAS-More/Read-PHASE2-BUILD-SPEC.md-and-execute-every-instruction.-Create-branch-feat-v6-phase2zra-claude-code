@@ -5,13 +5,24 @@
  * EZRA Multi-Agent Orchestration Engine
  *
  * Agent roster management, task assignment with weighted scoring,
- * performance tracking, budget management, and mock providers.
+ * performance tracking, budget management, and real LLM providers.
  *
  * Zero external dependencies.
  */
 
 const fs = require('fs');
 const path = require('path');
+
+// --- HTTP dependency (injectable for testing) ---
+
+let _httpsPost = null;
+function getHttpsPost() {
+  if (!_httpsPost) {
+    _httpsPost = require(path.join(__dirname, 'ezra-http.js')).httpsPost;
+  }
+  return _httpsPost;
+}
+function setHttpsPost(fn) { _httpsPost = fn; }
 
 // --- Supported Providers ---
 
@@ -39,6 +50,13 @@ const SCORING_WEIGHTS = {
   speed: 0.15,
   quality_score: 0.15,
   availability: 0.10,
+};
+
+// --- Pricing ---
+
+const PRICING = {
+  anthropic: { input_per_mtok: 3, output_per_mtok: 15 },
+  openai: { input_per_mtok: 2.5, output_per_mtok: 10 },
 };
 
 // --- Path Helpers ---
@@ -127,9 +145,49 @@ function readYaml(filePath) {
   return result;
 }
 
+// --- Resolve API Key ---
+
+function resolveApiKey(providerType, projectDir) {
+  // 1. Try settings (flat keys: anthropic_api_key, openai_api_key)
+  try {
+    const settings = require(path.join(__dirname, 'ezra-settings.js'));
+    const agentsCfg = settings.loadSettings(projectDir).agents || {};
+    const key = agentsCfg[providerType + '_api_key'];
+    if (key && key !== 'null' && key !== 'mock') {
+      return key;
+    }
+  } catch { /* ignore */ }
+  // 2. Try env
+  if (providerType === 'anthropic') return process.env.ANTHROPIC_API_KEY || null;
+  if (providerType === 'openai') return process.env.OPENAI_API_KEY || null;
+  return null;
+}
+
+function resolveModel(providerType, projectDir) {
+  try {
+    const settings = require(path.join(__dirname, 'ezra-settings.js'));
+    const agentsCfg = settings.loadSettings(projectDir).agents || {};
+    const model = agentsCfg[providerType + '_model'];
+    if (model) return model;
+  } catch { /* ignore */ }
+  if (providerType === 'anthropic') return 'claude-sonnet-4-20250514';
+  if (providerType === 'openai') return 'gpt-4o';
+  return 'unknown';
+}
+
+// --- Cost Calculation ---
+
+function calcCost(providerType, tokensIn, tokensOut) {
+  const pricing = PRICING[providerType];
+  if (!pricing) return 0;
+  const inputCost = (tokensIn / 1000000) * pricing.input_per_mtok;
+  const outputCost = (tokensOut / 1000000) * pricing.output_per_mtok;
+  return Math.round((inputCost + outputCost) * 1000000) / 1000000;
+}
+
 // --- Provider Factory ---
 
-function createProvider(config) {
+function createMockProvider(config) {
   const name = config.name || 'mock';
   const type = config.type || 'llm';
   const model = config.model || name;
@@ -139,17 +197,203 @@ function createProvider(config) {
     name,
     type,
     model,
+    provider: 'mock',
     execute: async (task) => {
       busy = true;
-      const duration = 100 + Math.floor(Math.random() * 200);
-      const tokens = 500 + Math.floor(Math.random() * 1500);
-      const cost = tokens * 0.00003;
-      await new Promise(r => setTimeout(r, 10)); // simulate async
+      const tokens_in = 200 + Math.floor(Math.random() * 300);
+      const tokens_out = 300 + Math.floor(Math.random() * 700);
+      const cost = tokens_in * 0.000003 + tokens_out * 0.000015;
+      await new Promise(r => setTimeout(r, 10));
       busy = false;
-      return { output: 'Mock response for: ' + (task.description || task), tokens, cost: Math.round(cost * 10000) / 10000, duration };
+      return {
+        success: true,
+        output: 'Mock response for: ' + (task.prompt || task.description || task),
+        tokens_in,
+        tokens_out,
+        tokens: tokens_in + tokens_out,
+        cost_usd: Math.round(cost * 1000000) / 1000000,
+        cost: Math.round(cost * 10000) / 10000,
+        duration_ms: 100 + Math.floor(Math.random() * 200),
+        duration: 100 + Math.floor(Math.random() * 200),
+      };
     },
     status: () => busy ? 'busy' : 'ready',
   };
+}
+
+function createAnthropicProvider(config) {
+  const name = 'claude';
+  const type = 'llm';
+  const providerType = 'anthropic';
+  const projectDir = config.projectDir || process.cwd();
+  const model = config.model || resolveModel(providerType, projectDir);
+  let busy = false;
+
+  return {
+    name,
+    type,
+    model,
+    provider: providerType,
+    execute: async (task) => {
+      const apiKey = resolveApiKey(providerType, projectDir);
+      if (!apiKey || apiKey === 'mock') {
+        return createMockProvider({ name, type, model }).execute(task);
+      }
+
+      busy = true;
+      const start = Date.now();
+      try {
+        const prompt = task.prompt || task.description || String(task);
+        const body = {
+          model: model,
+          max_tokens: 4096,
+          messages: [{ role: 'user', content: prompt }],
+        };
+        const headers = {
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        };
+        const httpPost = getHttpsPost();
+        const res = await httpPost('https://api.anthropic.com/v1/messages', body, headers);
+        const duration_ms = Date.now() - start;
+
+        if (res.statusCode !== 200) {
+          busy = false;
+          return { success: false, output: '', error: 'API error: ' + res.statusCode, duration_ms };
+        }
+
+        const resBody = typeof res.body === 'string' ? JSON.parse(res.body) : res.body;
+        const output = (resBody.content && resBody.content[0] && resBody.content[0].text) || '';
+        const usage = resBody.usage || {};
+        const tokens_in = usage.input_tokens || 0;
+        const tokens_out = usage.output_tokens || 0;
+        const cost_usd = calcCost(providerType, tokens_in, tokens_out);
+
+        busy = false;
+        return { success: true, output, tokens_in, tokens_out, cost_usd, duration_ms };
+      } catch (err) {
+        busy = false;
+        return { success: false, output: '', error: err.message, duration_ms: Date.now() - start };
+      }
+    },
+    status: () => busy ? 'busy' : 'ready',
+  };
+}
+
+function createOpenAIProvider(config) {
+  const name = 'gpt';
+  const type = 'llm';
+  const providerType = 'openai';
+  const projectDir = config.projectDir || process.cwd();
+  const model = config.model || resolveModel(providerType, projectDir);
+  let busy = false;
+
+  return {
+    name,
+    type,
+    model,
+    provider: providerType,
+    execute: async (task) => {
+      const apiKey = resolveApiKey(providerType, projectDir);
+      if (!apiKey || apiKey === 'mock') {
+        return createMockProvider({ name, type, model }).execute(task);
+      }
+
+      busy = true;
+      const start = Date.now();
+      try {
+        const prompt = task.prompt || task.description || String(task);
+        const body = {
+          model: model,
+          messages: [{ role: 'user', content: prompt }],
+        };
+        const headers = {
+          'Authorization': 'Bearer ' + apiKey,
+          'Content-Type': 'application/json',
+        };
+        const httpPost = getHttpsPost();
+        const res = await httpPost('https://api.openai.com/v1/chat/completions', body, headers);
+        const duration_ms = Date.now() - start;
+
+        if (res.statusCode !== 200) {
+          busy = false;
+          return { success: false, output: '', error: 'API error: ' + res.statusCode, duration_ms };
+        }
+
+        const resBody = typeof res.body === 'string' ? JSON.parse(res.body) : res.body;
+        const output = (resBody.choices && resBody.choices[0] && resBody.choices[0].message && resBody.choices[0].message.content) || '';
+        const usage = resBody.usage || {};
+        const tokens_in = usage.prompt_tokens || 0;
+        const tokens_out = usage.completion_tokens || 0;
+        const cost_usd = calcCost(providerType, tokens_in, tokens_out);
+
+        busy = false;
+        return { success: true, output, tokens_in, tokens_out, cost_usd, duration_ms };
+      } catch (err) {
+        busy = false;
+        return { success: false, output: '', error: err.message, duration_ms: Date.now() - start };
+      }
+    },
+    status: () => busy ? 'busy' : 'ready',
+  };
+}
+
+// --- Stub Providers ---
+
+const STUB_PROVIDERS = ['ollama', 'cursor', 'windsurf', 'copilot', 'codestral', 'deepseekcoder', 'qoder'];
+
+function createStubProvider(config) {
+  const name = config.name || config.type || 'stub';
+  return {
+    name,
+    type: config.type || 'llm',
+    model: config.model || name,
+    provider: name,
+    execute: async () => {
+      return { success: false, reason: 'provider_not_implemented', provider: name };
+    },
+    status: () => 'ready',
+  };
+}
+
+// --- Unified Provider Factory ---
+
+function createProvider(config) {
+  const providerType = config.type || config.name || 'mock';
+
+  if (providerType === 'anthropic') return createAnthropicProvider(config);
+  if (providerType === 'openai') return createOpenAIProvider(config);
+  if (STUB_PROVIDERS.includes(providerType)) return createStubProvider(config);
+
+  // Default: mock provider (backwards-compatible)
+  return createMockProvider(config);
+}
+
+// --- Execute With Fallback ---
+
+async function executeWithFallback(projectDir, task, primaryType, fallbackType) {
+  const config = loadAgentConfig(projectDir);
+  primaryType = primaryType || config.default_provider || 'anthropic';
+  fallbackType = fallbackType || config.fallback_provider || (primaryType === 'anthropic' ? 'openai' : 'anthropic');
+
+  // Budget check
+  const budget = checkBudget(projectDir);
+  if (budget.overspend) {
+    return { success: false, reason: 'budget_exceeded', budget };
+  }
+
+  // Try primary
+  const primary = createProvider({ type: primaryType, projectDir });
+  const result = await primary.execute(task);
+  if (result.success) {
+    return { ...result, provider_used: primaryType };
+  }
+
+  // Try fallback (max 1 attempt)
+  const fallback = createProvider({ type: fallbackType, projectDir });
+  const fallbackResult = await fallback.execute(task);
+  return { ...fallbackResult, provider_used: fallbackType, fallback: true };
 }
 
 // --- Load Agent Config ---
@@ -184,7 +428,6 @@ function assignTask(projectDir, task, strategy) {
   strategy = strategy || 'auto';
   const roster = getAgentRoster(projectDir);
   if (roster.length === 0) {
-    // Return first supported provider as fallback
     return { agent: SUPPORTED_PROVIDERS[0].name, strategy, reason: 'no_roster_fallback_to_default' };
   }
 
@@ -241,8 +484,8 @@ function recordTaskResult(projectDir, agentName, task, result) {
   const perf = fs.existsSync(perfPath) ? readYaml(perfPath) : {};
 
   const tasks_completed = (perf.tasks_completed || 0) + 1;
-  const total_cost = (perf.total_cost || 0) + (result.cost || 0);
-  const total_duration = (perf.total_duration || 0) + (result.duration || 0);
+  const total_cost = (perf.total_cost || 0) + (result.cost || result.cost_usd || 0);
+  const total_duration = (perf.total_duration || 0) + (result.duration || result.duration_ms || 0);
   const successes = (perf.successes || 0) + (result.success !== false ? 1 : 0);
 
   const updated = {
@@ -299,8 +542,8 @@ function getAgentLeaderboard(projectDir) {
 function checkBudget(projectDir) {
   const budgetPath = getBudgetPath(projectDir);
   const config = loadAgentConfig(projectDir);
-  const dailyCeiling = config.budget_ceiling_daily || 10;
-  const monthlyCeiling = config.budget_ceiling_monthly || 200;
+  const dailyCeiling = config.daily_budget_usd || config.budget_ceiling_daily || 10;
+  const monthlyCeiling = config.monthly_budget_usd || config.budget_ceiling_monthly || 200;
   const currency = config.budget_ceiling_currency || 'USD';
 
   const budget = fs.existsSync(budgetPath) ? readYaml(budgetPath) : { daily_spend: 0, monthly_spend: 0 };
@@ -323,7 +566,18 @@ module.exports = {
   SUPPORTED_PROVIDERS,
   ASSIGNMENT_STRATEGIES,
   SCORING_WEIGHTS,
+  PRICING,
+  STUB_PROVIDERS,
   createProvider,
+  createAnthropicProvider,
+  createOpenAIProvider,
+  createStubProvider,
+  createMockProvider,
+  executeWithFallback,
+  resolveApiKey,
+  resolveModel,
+  calcCost,
+  setHttpsPost,
   loadAgentConfig,
   getAgentRoster,
   assignTask,

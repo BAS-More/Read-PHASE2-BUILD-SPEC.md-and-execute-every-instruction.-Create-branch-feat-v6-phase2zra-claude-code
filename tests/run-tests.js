@@ -29,6 +29,7 @@ const SUITES = [
   { name: 'V6-Planner',  script: 'test-v6-planner.js' },
   { name: 'V6-Integration', script: 'test-v6-integration.js' },
   { name: 'V6-License',  script: 'test-v6-license.js' },
+  { name: 'V6-Agents-Real', script: 'test-v6-agents-real.js' },
 ];
 
 const testsDir = __dirname;
