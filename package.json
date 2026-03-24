@@ -29,6 +29,10 @@
   "keywords": [
     "claude-code",
     "governance",
+    "multi-agent",
+    "ai-development",
+    "code-quality",
+    "eslint-alternative",
     "architecture",
     "code-review",
     "ai",
@@ -45,9 +49,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BAS-More/ezra-claude-code.git"
+    "url": "https://github.com/BAS-More/ezra-claude-code.git"
   },
-  "homepage": "https://github.com/BAS-More/ezra-claude-code#readme",
+  "homepage": "https://ezradev.com",
   "bugs": {
     "url": "https://github.com/BAS-More/ezra-claude-code/issues"
   },
