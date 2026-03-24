@@ -14,6 +14,10 @@
 const fs = require('fs');
 const path = require('path');
 
+// EZRA feedback helpers (non-blocking)
+let _log;
+try { _log = require('./ezra-hook-logger').logHookEvent; } catch { _log = () => {}; }
+
 // Read stdin (Claude Code hook protocol)
 let stdinData = '';
 process.stdin.setEncoding('utf8');

@@ -416,6 +416,8 @@ function loadAgentConfig(projectDir) {
     const settings = require(path.join(__dirname, 'ezra-settings.js'));
     return settings.loadSettings(projectDir).agents || {};
   } catch {
+    const msg = _fmt('AGENTS_002', {});
+    _log(projectDir || process.cwd(), 'ezra-agents', 'info', msg);
     return {};
   }
 }

@@ -21,6 +21,11 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
+// EZRA feedback helpers (non-blocking)
+let _log, _fmt;
+try { _log = require('./ezra-hook-logger').logHookEvent; } catch { _log = () => {}; }
+try { _fmt = require('./ezra-error-codes').formatError; } catch { _fmt = (c) => 'EZRA: ' + c; }
+
 // Category mapping: EZRA category -> avios-context category
 const CATEGORY_MAP = {
   ARCHITECTURE: 'AD',
@@ -274,7 +279,9 @@ process.stdin.on('end', () => {
     process.exit(0);
   } catch (err) {
     // Non-blocking: log error to stderr, always exit 0
-    process.stderr.write(`EZRA avios-bridge hook error: ${err.message}\n`);
+    const msg = _fmt('AVIOS_001', { detail: err.message });
+    console.error(msg);
+    _log(process.cwd(), 'ezra-avios-bridge', 'warn', msg);
     process.exit(0);
   }
 });
