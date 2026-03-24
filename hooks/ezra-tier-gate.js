@@ -36,6 +36,7 @@ const CORE_COMMANDS = [
 /**
  * Check if a command should be gated.
  * Returns null if allowed, or a denial object if blocked.
+ * Now internally triggers refreshLicense if cache is expired.
  */
 function checkGate(commandName, projectDir) {
   // Core commands always pass
@@ -50,6 +51,20 @@ function checkGate(commandName, projectDir) {
     license = require(path.join(__dirname, 'ezra-license.js'));
   } catch (_) {
     return null; // If license module not available, allow
+  }
+
+  // Check current license — if cache expired, trigger refresh
+  const currentLicense = license.checkLicense(projectDir);
+  if (currentLicense.reason === 'cache_expired' || currentLicense.reason === 'no_cache') {
+    // Trigger async refresh (non-blocking for gate check)
+    try {
+      const refreshResult = license.refreshLicense(projectDir);
+      if (refreshResult && typeof refreshResult.then === 'function') {
+        // Async refresh started — use current check result for now
+      }
+    } catch (_) {
+      // Refresh failed — proceed with current check
+    }
   }
 
   const result = license.isFeatureAvailable(projectDir, feature);

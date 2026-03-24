@@ -243,15 +243,84 @@ function writeLicenseCache(projectDir, cacheData) {
 }
 
 /**
- * Refresh license (invalidate cache, forcing revalidation).
+ * Read cloud_sync settings from .ezra/settings.yaml
+ */
+function readCloudSettings(projectDir) {
+  const settingsPath = path.join(projectDir, '.ezra', 'settings.yaml');
+  if (!fs.existsSync(settingsPath)) return {};
+  const content = fs.readFileSync(settingsPath, 'utf8');
+  const result = {};
+  const endpointMatch = content.match(/endpoint:\s*['"]?([^\s'"]+)/);
+  if (endpointMatch) result.endpoint = endpointMatch[1];
+  const keyMatch = content.match(/license_key:\s*['"]?([^\s'"]+)/);
+  if (keyMatch) result.license_key = keyMatch[1];
+  return result;
+}
+
+/**
+ * Refresh license via cloud validation with cache logic.
+ * - If cache is < 30 days old: return cached result
+ * - If cache expired or missing: call validate-license edge function
+ * - On network error: return cached result if exists, otherwise { valid: true, tier: 'core' }
  */
 function refreshLicense(projectDir) {
   const cachePath = getCachePath(projectDir);
+
+  // Check existing cache freshness
   if (fs.existsSync(cachePath)) {
-    fs.unlinkSync(cachePath);
-    return { success: true, action: 'cache_cleared' };
+    try {
+      const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+      const validatedAt = new Date(cache.validated_at);
+      const now = new Date();
+      const age = daysBetween(validatedAt, now);
+      if (age < CACHE_MAX_DAYS) {
+        return { valid: cache.valid !== false, tier: cache.tier || 'core', cached: true, cache_age_days: Math.round(age) };
+      }
+    } catch (_) {
+      // Cache corrupted, will revalidate
+    }
   }
-  return { success: true, action: 'no_cache_to_clear' };
+
+  // Read cloud settings for endpoint + key
+  const cloudSettings = readCloudSettings(projectDir);
+  if (!cloudSettings.endpoint || !cloudSettings.license_key) {
+    // No endpoint configured — return cached if exists, else core default
+    if (fs.existsSync(cachePath)) {
+      try {
+        const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+        return { valid: cache.valid !== false, tier: cache.tier || 'core', cached: true, reason: 'no_endpoint' };
+      } catch (_) { /* fall through */ }
+    }
+    return { valid: true, tier: 'core', cached: false, reason: 'no_endpoint' };
+  }
+
+  // Attempt cloud validation (async — returns Promise)
+  const { httpsPost } = require(path.join(__dirname, 'ezra-http.js'));
+  const url = cloudSettings.endpoint.replace(/\/+$/, '') + '/functions/v1/validate-license';
+
+  return httpsPost(url, { key: cloudSettings.license_key })
+    .then((response) => {
+      const result = typeof response.body === 'object' ? response.body : {};
+      const cacheData = {
+        valid: result.valid !== false,
+        tier: result.tier || 'core',
+        expires_at: result.expires_at || null,
+        seats: result.seats || 1,
+        validated_at: new Date().toISOString(),
+      };
+      writeLicenseCache(projectDir, cacheData);
+      return { valid: cacheData.valid, tier: cacheData.tier, cached: false };
+    })
+    .catch(() => {
+      // Network error — return cached if exists, else core default
+      if (fs.existsSync(cachePath)) {
+        try {
+          const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+          return { valid: cache.valid !== false, tier: cache.tier || 'core', cached: true, reason: 'network_error' };
+        } catch (_) { /* fall through */ }
+      }
+      return { valid: true, tier: 'core', cached: false, reason: 'network_error' };
+    });
 }
 
 // ─── Exports ────────────────────────────────────────────────────
@@ -269,5 +338,6 @@ module.exports = {
   getCachedLicense,
   writeLicenseCache,
   refreshLicense,
+  readCloudSettings,
   tierRank,
 };

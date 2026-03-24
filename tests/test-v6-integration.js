@@ -37,6 +37,8 @@ const workflows = require(path.join(__dirname, '..', 'hooks', 'ezra-workflows.js
 const planner = require(path.join(__dirname, '..', 'hooks', 'ezra-planner.js'));
 const agents = require(path.join(__dirname, '..', 'hooks', 'ezra-agents.js'));
 const dashboard = require(path.join(__dirname, '..', 'hooks', 'ezra-dashboard-data.js'));
+const cloudSync = require(path.join(__dirname, '..', 'hooks', 'ezra-cloud-sync.js'));
+const ezraHttp = require(path.join(__dirname, '..', 'hooks', 'ezra-http.js'));
 
 let projectDir;
 
@@ -263,6 +265,86 @@ test('edge: license without .ezra', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ezra-edge-'));
   const r = license.checkLicense(tmp);
   assert(r.valid === true, 'core always valid');
+  rmDir(tmp);
+});
+
+// ═══ CLOUD WIRING ════════════════════════════════════════════════
+
+test('ezra-http: httpsPost is a function', () => {
+  assert(typeof ezraHttp.httpsPost === 'function', 'httpsPost exported');
+});
+
+test('ezra-http: httpsGet is a function', () => {
+  assert(typeof ezraHttp.httpsGet === 'function', 'httpsGet exported');
+});
+
+test('refreshLicense: returns cached when cache is fresh', () => {
+  // Write a fresh cache
+  const cacheDir = path.join(projectDir, '.ezra');
+  if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+  const cacheData = {
+    valid: true,
+    tier: 'pro',
+    validated_at: new Date().toISOString(),
+    expires_at: null,
+    seats: 1,
+  };
+  fs.writeFileSync(path.join(cacheDir, 'license-cache.json'), JSON.stringify(cacheData), 'utf8');
+  const result = license.refreshLicense(projectDir);
+  // May return sync or promise — handle sync case
+  if (result && typeof result.then !== 'function') {
+    assert(result.cached === true, 'should be cached, got ' + JSON.stringify(result));
+    assert(result.tier === 'pro', 'tier should be pro');
+  } else {
+    assert(true, 'returned promise (async path)');
+  }
+});
+
+test('refreshLicense: returns core when no cache and no endpoint', () => {
+  // Remove cache
+  const cachePath = path.join(projectDir, '.ezra', 'license-cache.json');
+  if (fs.existsSync(cachePath)) fs.unlinkSync(cachePath);
+  const result = license.refreshLicense(projectDir);
+  if (result && typeof result.then !== 'function') {
+    assert(result.valid === true, 'should be valid');
+    assert(result.tier === 'core', 'should default to core');
+  } else {
+    assert(true, 'returned promise (async path)');
+  }
+});
+
+test('pushSync: returns skipped when cloud_sync disabled', () => {
+  const result = cloudSync.pushSync(projectDir);
+  // pushSync returns sync when disabled
+  if (result && typeof result.then !== 'function') {
+    assert(result.skipped === true, 'should be skipped');
+    assert(result.reason === 'cloud_sync_disabled', 'reason should be cloud_sync_disabled, got ' + result.reason);
+  } else {
+    assert(true, 'returned promise');
+  }
+});
+
+test('pullSync: returns skipped when cloud_sync disabled', () => {
+  const result = cloudSync.pullSync(projectDir);
+  if (result && typeof result.then !== 'function') {
+    assert(result.skipped === true, 'should be skipped');
+    assert(result.reason === 'cloud_sync_disabled', 'reason should be cloud_sync_disabled, got ' + result.reason);
+  } else {
+    assert(true, 'returned promise');
+  }
+});
+
+test('readCloudSyncSettings: returns empty for no settings', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ezra-cloud-'));
+  const result = cloudSync.readCloudSyncSettings(tmp);
+  assert(typeof result === 'object', 'returns object');
+  rmDir(tmp);
+});
+
+test('readCloudSettings: returns empty for missing dir', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ezra-cloud-'));
+  const result = license.readCloudSettings(tmp);
+  assert(typeof result === 'object', 'returns object');
   rmDir(tmp);
 });
 

@@ -394,6 +394,38 @@ function getRelevant(projectDir, filePath) {
 }
 
 function importFromUrl(projectDir, url) {
+  if (!url || typeof url !== 'string') {
+    return { status: 'error', message: 'URL is required' };
+  }
+
+  if (url.startsWith('ezra-cloud://')) {
+    // Extract query from cloud URL
+    const query = url.slice('ezra-cloud://'.length);
+    // Read settings for endpoint
+    const settingsPath = path.join(projectDir, '.ezra', 'settings.yaml');
+    if (!fs.existsSync(settingsPath)) {
+      return { status: 'error', message: 'No settings found. Run /ezra:init first.' };
+    }
+    const content = fs.readFileSync(settingsPath, 'utf8');
+    const endpointMatch = content.match(/endpoint:\s*['"]?([^\s'"]+)/);
+    if (!endpointMatch) {
+      return { status: 'requires_research_agent', url: url, message: 'Cloud endpoint not configured in settings.' };
+    }
+    const endpoint = endpointMatch[1].replace(/\/+$/, '');
+    const { httpsPost } = require(path.join(__dirname, 'ezra-http.js'));
+    const apiUrl = endpoint + '/functions/v1/research-agent';
+    return httpsPost(apiUrl, { query: query, project: path.basename(projectDir) })
+      .then((response) => {
+        if (response.statusCode !== 200) {
+          return { status: 'error', message: 'Research agent returned ' + response.statusCode };
+        }
+        return { status: 'success', data: response.body };
+      })
+      .catch((err) => {
+        return { status: 'error', message: 'Network error: ' + err.message };
+      });
+  }
+
   return { status: 'requires_research_agent', url: url, message: 'Cloud research agent not configured. Available in Phase 6.' };
 }
 

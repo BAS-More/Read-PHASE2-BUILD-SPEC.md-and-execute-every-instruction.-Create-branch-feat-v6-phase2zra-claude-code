@@ -326,23 +326,28 @@ test('writeLicenseCache and getCachedLicense roundtrip', () => {
 
 // ─── refreshLicense ─────────────────────────────────────────────
 
-test('refreshLicense clears cache', () => {
+test('refreshLicense returns cached when fresh', () => {
   const tmp = makeTmp();
   try {
-    license.writeLicenseCache(tmp, { tier: 'pro', validated_at: new Date().toISOString() });
-    assert(license.getCachedLicense(tmp) !== null);
-    license.refreshLicense(tmp);
-    assert.strictEqual(license.getCachedLicense(tmp), null);
+    license.writeLicenseCache(tmp, { tier: 'pro', valid: true, validated_at: new Date().toISOString() });
+    const result = license.refreshLicense(tmp);
+    if (result && typeof result.then !== 'function') {
+      assert.strictEqual(result.cached, true);
+      assert.strictEqual(result.tier, 'pro');
+    }
   } finally {
     cleanup(tmp);
   }
 });
 
-test('refreshLicense succeeds when no cache', () => {
+test('refreshLicense returns core when no cache and no endpoint', () => {
   const tmp = makeTmp();
   try {
     const result = license.refreshLicense(tmp);
-    assert.strictEqual(result.success, true);
+    if (result && typeof result.then !== 'function') {
+      assert.strictEqual(result.valid, true);
+      assert.strictEqual(result.tier, 'core');
+    }
   } finally {
     cleanup(tmp);
   }

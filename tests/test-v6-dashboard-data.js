@@ -385,8 +385,8 @@ test('cloudSync: has all expected exports', () => {
   }
 });
 
-test('cloudSync: exports count is 18', () => {
-  assertEqual(Object.keys(cloudSync).length, 18);
+test('cloudSync: exports count is 21', () => {
+  assertEqual(Object.keys(cloudSync).length, 21);
 });
 
 // --- Constants ---

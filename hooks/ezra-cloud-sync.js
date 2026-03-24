@@ -283,6 +283,145 @@ function diffManifests(manifest1, manifest2) {
   return diffs;
 }
 
+// ─── Cloud Sync Settings Helper ─────────────────────────────────
+
+function readCloudSyncSettings(projectDir) {
+  const settingsPath = path.join(projectDir, '.ezra', 'settings.yaml');
+  if (!fs.existsSync(settingsPath)) return {};
+  const content = fs.readFileSync(settingsPath, 'utf8');
+  const result = {};
+  const enabledMatch = content.match(/cloud_sync[\s\S]*?enabled:\s*(true|false)/);
+  if (enabledMatch) result.enabled = enabledMatch[1] === 'true';
+  const endpointMatch = content.match(/endpoint:\s*['"]?([^\s'"]+)/);
+  if (endpointMatch) result.endpoint = endpointMatch[1];
+  const tokenMatch = content.match(/auth_token:\s*['"]?([^\s'"]+)/);
+  if (tokenMatch) result.auth_token = tokenMatch[1];
+  const projectIdMatch = content.match(/project_id:\s*['"]?([^\s'"]+)/);
+  if (projectIdMatch) result.project_id = projectIdMatch[1];
+  return result;
+}
+
+// ─── Push Sync ──────────────────────────────────────────────────
+
+function pushSync(projectDir) {
+  const settings = readCloudSyncSettings(projectDir);
+  if (settings.enabled !== true) {
+    return { skipped: true, reason: 'cloud_sync_disabled' };
+  }
+
+  if (!settings.endpoint) {
+    return { skipped: true, reason: 'no_endpoint' };
+  }
+
+  // Collect sync payload
+  const ezraDir = path.join(projectDir, '.ezra');
+  const payload = { project_id: settings.project_id || path.basename(projectDir) };
+
+  // Decisions
+  const decisionsDir = path.join(ezraDir, 'decisions');
+  if (fs.existsSync(decisionsDir)) {
+    payload.decisions = fs.readdirSync(decisionsDir)
+      .filter(f => f.endsWith('.yaml'))
+      .map(f => {
+        const content = fs.readFileSync(path.join(decisionsDir, f), 'utf8');
+        return { file: f, content };
+      });
+  }
+
+  // Latest health score from scans
+  const scansDir = path.join(ezraDir, 'scans');
+  if (fs.existsSync(scansDir)) {
+    const scanFiles = fs.readdirSync(scansDir).filter(f => f.endsWith('.yaml')).sort().reverse();
+    if (scanFiles.length > 0) {
+      payload.latest_scan = fs.readFileSync(path.join(scansDir, scanFiles[0]), 'utf8');
+    }
+  }
+
+  // Settings
+  const settingsPath = path.join(ezraDir, 'settings.yaml');
+  if (fs.existsSync(settingsPath)) {
+    payload.settings = fs.readFileSync(settingsPath, 'utf8');
+  }
+
+  const { httpsPost } = require(path.join(__dirname, 'ezra-http.js'));
+  const url = settings.endpoint.replace(/\/+$/, '') + '/functions/v1/sync-push';
+  const headers = {};
+  if (settings.auth_token) {
+    headers['Authorization'] = 'Bearer ' + settings.auth_token;
+  }
+
+  return httpsPost(url, payload, headers)
+    .then((response) => {
+      saveSyncState(projectDir, {
+        last_push: new Date().toISOString(),
+        push_status: response.statusCode === 200 ? 'success' : 'error',
+        status_code: response.statusCode,
+      });
+      return { success: response.statusCode === 200, statusCode: response.statusCode, body: response.body };
+    })
+    .catch((err) => {
+      return { success: false, reason: 'network_error', error: err.message };
+    });
+}
+
+// ─── Pull Sync ──────────────────────────────────────────────────
+
+function pullSync(projectDir) {
+  const settings = readCloudSyncSettings(projectDir);
+  if (settings.enabled !== true) {
+    return { skipped: true, reason: 'cloud_sync_disabled' };
+  }
+
+  if (!settings.endpoint) {
+    return { skipped: true, reason: 'no_endpoint' };
+  }
+
+  const state = loadSyncState(projectDir);
+  const since = state.last_pull || '1970-01-01T00:00:00Z';
+  const projectId = settings.project_id || path.basename(projectDir);
+
+  const { httpsGet } = require(path.join(__dirname, 'ezra-http.js'));
+  const url = settings.endpoint.replace(/\/+$/, '') + '/functions/v1/sync-pull?project_id=' + encodeURIComponent(projectId) + '&since=' + encodeURIComponent(since);
+  const headers = {};
+  if (settings.auth_token) {
+    headers['Authorization'] = 'Bearer ' + settings.auth_token;
+  }
+
+  return httpsGet(url, headers)
+    .then((response) => {
+      if (response.statusCode !== 200) {
+        return { success: false, statusCode: response.statusCode };
+      }
+
+      const data = typeof response.body === 'object' ? response.body : {};
+      let mergedCount = 0;
+      const ezraDir = path.join(projectDir, '.ezra');
+
+      // Merge decisions
+      if (data.decisions && Array.isArray(data.decisions)) {
+        const decisionsDir = path.join(ezraDir, 'decisions');
+        if (!fs.existsSync(decisionsDir)) fs.mkdirSync(decisionsDir, { recursive: true });
+        for (const d of data.decisions) {
+          if (d.file && d.content) {
+            fs.writeFileSync(path.join(decisionsDir, d.file), d.content, 'utf8');
+            mergedCount++;
+          }
+        }
+      }
+
+      saveSyncState(projectDir, {
+        last_pull: new Date().toISOString(),
+        pull_status: 'success',
+        merged_count: mergedCount,
+      });
+
+      return { success: true, merged_count: mergedCount };
+    })
+    .catch((err) => {
+      return { success: false, reason: 'network_error', error: err.message };
+    });
+}
+
 // ─── Exports ─────────────────────────────────────────────────────
 
 module.exports = {
@@ -304,6 +443,9 @@ module.exports = {
   listBackups,
   restoreFromBackup,
   diffManifests,
+  readCloudSyncSettings,
+  pushSync,
+  pullSync,
 };
 
 // ─── Hook Protocol ───────────────────────────────────────────────

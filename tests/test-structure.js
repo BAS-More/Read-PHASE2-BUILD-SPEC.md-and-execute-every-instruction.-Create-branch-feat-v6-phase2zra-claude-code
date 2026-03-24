@@ -104,7 +104,7 @@ test('4 agent files exist', () => {
 test('21 hook files exist', () => {
   const dir = path.join(ROOT, 'hooks');
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.js'));
-  assert(files.length === 21, `Expected 21 hooks, found ${files.length}`);
+  assert(files.length === 22, `Expected 22 hooks, found ${files.length}`);
 });
 
 test('1 skill file exists', () => {

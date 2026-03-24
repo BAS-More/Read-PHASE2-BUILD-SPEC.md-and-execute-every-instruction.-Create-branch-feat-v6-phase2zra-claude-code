@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/ezra-logo.svg" width="220" alt="EZRA logo, a quill writing across a parchment scroll with Hebrew lettering and a Magen David inside an ink-blue seal" />
+</p>
+
 # EZRA (עזרא)
 
 ## The Scribe Who Restores and Enforces Standards
