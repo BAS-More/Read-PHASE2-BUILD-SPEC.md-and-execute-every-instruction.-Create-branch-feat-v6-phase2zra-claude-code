@@ -138,7 +138,9 @@ function run(event) {
       console.log(`  ⚠️  ${criticalGaps} critical documents missing — run /ezra:doc check`);
     }
   } catch (err) {
-    console.log(`EZRA: ${projectName || 'Unknown'} │ Error reading state: ${err.message}`);
+    const msg = `EZRA: ${projectName || 'Unknown'} │ Error reading state: ${err.message}`;
+    console.log(msg);
+    _log(cwd, 'ezra-dash-hook', 'warn', msg, 'Run /ezra:health to diagnose.');
   }
   process.exit(0);
 }
