@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EZRA Logo Directions</title>
+  <style>
+    :root {
+      --ink: #101922;
+      --ink-soft: #1f3347;
+      --sand: #f7f1e2;
+      --sand-deep: #eadfc7;
+      --gold: #d9be7a;
+      --text: #2b2218;
+      --muted: #5a4730;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: radial-gradient(circle at top, var(--ink-soft) 0%, var(--ink) 60%, #0b1118 100%);
+      color: #f5ecd7;
+    }
+
+    .wrap {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 40px 28px 56px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+
+    .intro {
+      margin: 0 0 28px;
+      max-width: 860px;
+      font-size: 1.15rem;
+      line-height: 1.5;
+      color: #dcc89e;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--sand) 0%, var(--sand-deep) 100%);
+      color: var(--text);
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(217, 190, 122, 0.28);
+    }
+
+    .card img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      display: block;
+      margin-bottom: 14px;
+      border-radius: 18px;
+      background: rgba(255, 250, 241, 0.7);
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1.8rem;
+    }
+
+    .card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 1.03rem;
+    }
+
+    .files {
+      padding-top: 12px;
+      border-top: 1px solid rgba(90, 71, 48, 0.18);
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+    }
+
+    .pick {
+      margin-top: 28px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: rgba(217, 190, 122, 0.12);
+      border: 1px solid rgba(217, 190, 122, 0.22);
+      color: #f5ecd7;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>EZRA Logo Directions</h1>
+    <p class="intro">
+      Three directions that fit Ezra HaSofer and the governance software better.
+      The live logo has already had the top badge removed.
+    </p>
+
+    <section class="grid">
+      <article class="card">
+        <img src="./ezra-logo-concept-scribe-code.svg" alt="Scribe plus code concept">
+        <h2>Scribe + Code</h2>
+        <p>
+          Keeps Ezra unmistakably as a scribe while the bracket frame signals software immediately.
+          This is the strongest balance of identity and product.
+        </p>
+        <div class="files">
+          <div><code>assets/ezra-logo-concept-scribe-code.svg</code></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="./ezra-logo-concept-standards-tablets.svg" alt="Keeper of standards concept">
+        <h2>Keeper of Standards</h2>
+        <p>
+          Pushes the governance side harder and feels more authoritative.
+          Best if EZRA should feel like the steward of rules, order, and architecture.
+        </p>
+        <div class="files">
+          <div><code>assets/ezra-logo-concept-standards-tablets.svg</code></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="./ezra-logo-concept-decision-nodes.svg" alt="Decision network concept">
+        <h2>Decision Network</h2>
+        <p>
+          Leans more technical and product-like.
+          The connected nodes suggest ADRs, governance graphs, and multi-agent orchestration.
+        </p>
+        <div class="files">
+          <div><code>assets/ezra-logo-concept-decision-nodes.svg</code></div>
+        </div>
+      </article>
+    </section>
+
+    <div class="pick">
+      Recommendation: <strong>Scribe + Code</strong> is the best fit for the current product.
+    </div>
+  </main>
+</body>
+</html>
