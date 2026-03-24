@@ -1,61 +1,43 @@
-# ═══════════════════════════════════════════════════════════════════
-# EZRA Governance Rules for Cursor
+# EZRA Governance Rules for Cursor Agent
 # Copy this file to your project root as .cursorrules
-# https://github.com/BAS-More/ezra-claude-code
-# ═══════════════════════════════════════════════════════════════════
+# Customize the rules below for your project
 
-# ─── EZRA Governance ──────────────────────────────────────────────
-# These rules integrate EZRA's codebase governance into Cursor's
-# AI agent. They ensure Cursor Agent respects architectural
-# decisions, protected paths, and quality standards.
+## Standards
+- Follow the coding standards defined in .ezra/settings.yaml
+- Use consistent naming conventions as specified in the standards section
+- Maximum file complexity must not exceed the configured threshold
+- All new code must include appropriate error handling
 
-You are working in a project governed by EZRA (עזרא), a codebase governance framework.
+## Security
+- Never hardcode secrets, API keys, passwords, or tokens
+- Always validate user input before processing
+- Use parameterized queries for database operations
+- Check .ezra/settings.yaml security section for project-specific rules
 
-## Governance State
+## Before Making Changes
+- Read .ezra/governance.yaml to understand project phase and constraints
+- Check .ezra/settings.yaml oversight.level for current enforcement mode
+- If oversight level is "strict" or "gate", verify changes against all rules before proceeding
+- Check .ezra/memory/red-lines.yaml — never violate any listed red line
 
-- Read `.ezra/governance.yaml` before making architectural changes. It contains recorded decisions, protected paths, and enforcement rules.
-- Read `.ezra/settings.yaml` for the current oversight level and configuration.
-- Check `.ezra/decisions/` for existing Architectural Decision Records (ADRs) before proposing new patterns or technologies.
+## After Making Changes
+- Run health check: `npx ezra-claude-code scan` (or `ezra scan` if globally installed)
+- If health score drops below the threshold in .ezra/settings.yaml, fix issues before committing
+- Record any architectural decisions in .ezra/decisions/ using YAML format
+- Update .ezra/memory/key-facts.yaml if new critical project facts emerge
 
-## Protected Paths
+## Decision Tracking
+- When making architectural choices, create a decision file:
+  - File: .ezra/decisions/AD-NNN.yaml
+  - Format: category, decision, rationale, status: locked, date
+- Categories: AD (Architecture), BD (Business), TC (Technical), SR (Scope), SC (Security), DD (Data)
 
-- NEVER modify files listed under `protected_paths` in `.ezra/governance.yaml` without explicit user confirmation.
-- Protected paths typically include: configuration files, security modules, database schemas, CI/CD pipelines, and authentication logic.
-- If a user asks you to edit a protected path, warn them first and ask for confirmation.
+## Testing
+- All new features must have tests
+- Run existing test suite before committing — zero regressions allowed
+- Minimum coverage target is defined in .ezra/settings.yaml standards section
 
-## Architectural Decisions
-
-- Before introducing a new library, framework, pattern, or architectural change, check `.ezra/decisions/` for relevant ADRs.
-- If an ADR exists that covers the topic, follow the recorded decision.
-- If no ADR exists and the change is significant, suggest the user record one: `/ezra:decide` or manually create a YAML file in `.ezra/decisions/`.
-
-## Quality Standards
-
-- Run `node tests/run-tests.js` (or `npm test`) before considering any task complete.
-- If `.ezra/scans/` contains recent scan results, check them for known issues before making changes in affected areas.
-- Follow the coding standards documented in `.ezra/governance.yaml` under `standards`.
-
-## Before Pull Requests
-
-- Remind the user to run a governance scan: `/ezra:scan` (if Claude Code is available) or review `.ezra/` state manually.
-- Check that all tests pass.
-- Verify no protected paths were modified without approval.
-- Ensure new architectural decisions are recorded as ADRs.
-
-## Health Pillars
-
-EZRA scores projects across 5 pillars. Keep these in mind:
-1. **On-Track** — Plans progressing, decisions recorded, no stalled work.
-2. **No Gaps** — Document coverage, test coverage, API docs complete.
-3. **Clean** — No type errors, strict typing, no dead code.
-4. **Secure** — OWASP compliance, no hardcoded secrets, proper auth.
-5. **Best Practices** — CI/CD, SOLID principles, structured logging.
-
-## Document Types
-
-EZRA manages 55 SDLC document types. When the user asks about documentation, reference `.ezra/docs/` for existing documents and suggest creating missing ones.
-
-# ─── Project-Specific Rules ──────────────────────────────────────
-# Add your own project rules below this line.
-# ═════════════════════════════════════════════════════════════════
-
+## Documentation
+- Update relevant documentation when changing public APIs
+- Keep README.md current with new features
+- Add JSDoc/TSDoc comments to exported functions
