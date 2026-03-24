@@ -26,7 +26,7 @@ const hook = require('../hooks/ezra-memory-hook.js');
 
 // ═══ MEMORY MODULE ═══
 
-test('memory: exports count', () => { assertEqual(Object.keys(mem).length, 23); });
+test('memory: exports count', () => { assertEqual(Object.keys(mem).length, 24); });
 
 test('MEMORY_TYPES: has all types', () => {
   const expected = ['pattern', 'anti-pattern', 'lesson', 'decision-context', 'preference', 'fact', 'warning'];
