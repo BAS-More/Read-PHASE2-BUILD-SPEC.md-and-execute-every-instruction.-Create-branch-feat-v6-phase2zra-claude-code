@@ -39,9 +39,13 @@ function parseYaml(text) {
   return result;
 }
 
+const MAX_STDIN = 1024 * 1024; // 1 MB stdin limit
 let input = '';
 process.stdin.setEncoding('utf8');
-process.stdin.on('data', chunk => input += chunk);
+process.stdin.on('data', chunk => {
+  input += chunk;
+  if (input.length > MAX_STDIN) { process.exit(0); }
+});
 process.stdin.on('end', () => {
   try {
     const event = JSON.parse(input);
@@ -54,6 +58,14 @@ process.stdin.on('end', () => {
 
     // Find .ezra/governance.yaml relative to cwd
     const cwd = event.cwd || process.cwd();
+
+    // Path traversal guard — resolved path must stay within cwd
+    const resolved = path.resolve(cwd, filePath);
+    if (!resolved.startsWith(path.resolve(cwd) + path.sep) && resolved !== path.resolve(cwd)) {
+      process.stderr.write('EZRA hook error: path traversal blocked\n');
+      process.exit(0);
+      return;
+    }
     const govPath = path.join(cwd, '.ezra', 'governance.yaml');
     
     if (!fs.existsSync(govPath)) {
