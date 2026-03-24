@@ -246,7 +246,7 @@ test('UAT: README claims 4 subagents — verified', () => {
 
 test('UAT: README claims 24 hooks — verified', () => {
   const hooks = fs.readdirSync(path.join(ROOT, 'hooks')).filter(f => f.endsWith('.js'));
-  assert(hooks.length === 24, `README says 22, actual: ${hooks.length}`);
+  assert(hooks.length === 24, `README says 24, actual: ${hooks.length}`);
 });
 
 test('UAT: README claims 5 templates — verified', () => {
