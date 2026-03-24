@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">EZRA logo</title>
-  <desc id="desc">A stylized quill and parchment scroll with Hebrew lettering inside an ink-blue seal, representing Ezra the scribe.</desc>
+  <desc id="desc">A simple feather quill writing across a Torah scroll inside an ink-blue seal, representing Ezra the scribe.</desc>
   <defs>
     <linearGradient id="bg" x1="108" y1="84" x2="408" y2="428" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#27425a"/>
       <stop offset="1" stop-color="#101922"/>
     </linearGradient>
-    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(256 184) rotate(90) scale(170)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#4b6b89" stop-opacity="0.45"/>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(256 176) rotate(90) scale(172)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4b6b89" stop-opacity="0.38"/>
       <stop offset="1" stop-color="#4b6b89" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="bronze" x1="112" y1="96" x2="392" y2="416" gradientUnits="userSpaceOnUse">
@@ -15,14 +15,19 @@
       <stop offset="0.5" stop-color="#b38a4c"/>
       <stop offset="1" stop-color="#7c5928"/>
     </linearGradient>
-    <linearGradient id="parchment" x1="136" y1="148" x2="388" y2="336" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#fbf2d7"/>
-      <stop offset="0.5" stop-color="#ead7ab"/>
+    <linearGradient id="parchment" x1="176" y1="126" x2="336" y2="362" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fdf5dd"/>
+      <stop offset="0.55" stop-color="#ecdcb4"/>
       <stop offset="1" stop-color="#d4b77a"/>
     </linearGradient>
-    <linearGradient id="feather" x1="238" y1="128" x2="386" y2="354" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#f7f0df"/>
-      <stop offset="1" stop-color="#d6c6a2"/>
+    <linearGradient id="wood" x1="148" y1="108" x2="366" y2="376" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c29559"/>
+      <stop offset="0.5" stop-color="#9a6f3e"/>
+      <stop offset="1" stop-color="#6d4924"/>
+    </linearGradient>
+    <linearGradient id="feather" x1="270" y1="116" x2="378" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#faf3e6"/>
+      <stop offset="1" stop-color="#d8c7a2"/>
     </linearGradient>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#091018" flood-opacity="0.28"/>
@@ -35,67 +40,60 @@
     <circle cx="256" cy="256" r="198" fill="none" stroke="#7b6135" stroke-opacity="0.45" stroke-width="4"/>
   </g>
 
-  <circle cx="256" cy="184" r="150" fill="url(#glow)"/>
+  <circle cx="256" cy="176" r="154" fill="url(#glow)"/>
 
-  <ellipse cx="152" cy="244" rx="34" ry="72" fill="url(#parchment)" stroke="#8c6937" stroke-width="8"/>
-  <ellipse cx="360" cy="244" rx="34" ry="72" fill="url(#parchment)" stroke="#8c6937" stroke-width="8"/>
-  <ellipse cx="152" cy="244" rx="14" ry="34" fill="none" stroke="#9b7a45" stroke-width="6" opacity="0.8"/>
-  <ellipse cx="360" cy="244" rx="14" ry="34" fill="none" stroke="#9b7a45" stroke-width="6" opacity="0.8"/>
+  <g>
+    <circle cx="178" cy="122" r="16" fill="url(#wood)" stroke="#5c3d1e" stroke-width="6"/>
+    <circle cx="334" cy="122" r="16" fill="url(#wood)" stroke="#5c3d1e" stroke-width="6"/>
+    <circle cx="178" cy="364" r="16" fill="url(#wood)" stroke="#5c3d1e" stroke-width="6"/>
+    <circle cx="334" cy="364" r="16" fill="url(#wood)" stroke="#5c3d1e" stroke-width="6"/>
 
-  <path
-    d="M160 172
-       C192 152 223 144 256 144
-       C289 144 320 152 352 172
-       L352 316
-       C320 336 289 344 256 344
-       C223 344 192 336 160 316
-       Z"
-    fill="url(#parchment)"
-    stroke="#8c6937"
-    stroke-width="8"
-  />
+    <rect x="160" y="136" width="36" height="214" rx="18" fill="url(#wood)" stroke="#5c3d1e" stroke-width="6"/>
+    <rect x="316" y="136" width="36" height="214" rx="18" fill="url(#wood)" stroke="#5c3d1e" stroke-width="6"/>
 
-  <path d="M208 198 H316" fill="none" stroke="#9c7a43" stroke-width="10" stroke-linecap="round" opacity="0.9"/>
-  <path d="M220 226 H298" fill="none" stroke="#a3824b" stroke-width="10" stroke-linecap="round" opacity="0.82"/>
-  <text
-    x="228"
-    y="280"
-    text-anchor="middle"
-    font-size="52"
-    font-family="'Noto Serif Hebrew', 'Times New Roman', serif"
-    font-weight="700"
-    fill="#6a4d28"
-    stroke="#f8eed0"
-    stroke-width="2"
-    paint-order="stroke fill"
-    direction="rtl"
-    unicode-bidi="bidi-override"
-    transform="rotate(-6 228 280)"
-  >עזרא</text>
-  <path d="M214 304 H286" fill="none" stroke="#a3824b" stroke-width="10" stroke-linecap="round" opacity="0.82"/>
+    <path
+      d="M194 132
+         C212 124 233 120 256 120
+         C279 120 300 124 318 132
+         L318 354
+         C300 362 279 366 256 366
+         C233 366 212 362 194 354
+         Z"
+      fill="url(#parchment)"
+      stroke="#8c6937"
+      stroke-width="8"
+    />
 
-  <path
-    d="M338 118
-       C390 130 410 190 385 246
-       C360 303 316 347 250 382
-       C273 343 276 303 262 252
-       C248 201 264 133 338 118
-       Z"
-    fill="url(#feather)"
-    stroke="#76572f"
-    stroke-width="8"
-    stroke-linejoin="round"
-  />
+    <path d="M206 150 C198 168 194 198 194 238 C194 278 198 310 206 336" fill="none" stroke="#c8a66a" stroke-width="6" stroke-linecap="round" opacity="0.75"/>
+    <path d="M306 150 C314 168 318 198 318 238 C318 278 314 310 306 336" fill="none" stroke="#c8a66a" stroke-width="6" stroke-linecap="round" opacity="0.75"/>
 
-  <path d="M337 134 C327 183 308 242 272 313 C260 336 246 359 230 381" fill="none" stroke="#73542c" stroke-width="6" stroke-linecap="round"/>
-  <path d="M330 164 C307 170 287 182 268 198" fill="none" stroke="#8f7140" stroke-width="4" stroke-linecap="round"/>
-  <path d="M345 188 C315 201 292 221 276 247" fill="none" stroke="#8f7140" stroke-width="4" stroke-linecap="round"/>
-  <path d="M349 218 C320 236 298 259 283 286" fill="none" stroke="#8f7140" stroke-width="4" stroke-linecap="round"/>
-  <path d="M343 252 C318 271 298 295 286 321" fill="none" stroke="#8f7140" stroke-width="4" stroke-linecap="round"/>
+    <path d="M220 188 H292" fill="none" stroke="#b69156" stroke-width="8" stroke-linecap="round" opacity="0.72"/>
+    <path d="M220 216 H286" fill="none" stroke="#b69156" stroke-width="8" stroke-linecap="round" opacity="0.64"/>
+    <path d="M220 244 H278" fill="none" stroke="#b69156" stroke-width="8" stroke-linecap="round" opacity="0.58"/>
+  </g>
 
-  <path d="M337 128 L186 363" fill="none" stroke="#5b4020" stroke-width="14" stroke-linecap="round"/>
-  <path d="M185 362 L157 408 L211 387 Z" fill="url(#bronze)" stroke="#5b4020" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M182 364 L193 382" fill="none" stroke="#5b4020" stroke-width="4" stroke-linecap="round"/>
+  <g>
+    <path
+      d="M344 124
+         C386 138 398 190 378 236
+         C358 282 323 316 274 342
+         C290 309 291 276 281 238
+         C271 198 288 138 344 124
+         Z"
+      fill="url(#feather)"
+      stroke="#76572f"
+      stroke-width="8"
+      stroke-linejoin="round"
+    />
+    <path d="M340 138 C332 176 316 224 286 286 C274 309 262 328 248 344" fill="none" stroke="#7a5b31" stroke-width="6" stroke-linecap="round"/>
+    <path d="M334 166 C312 172 294 184 277 200" fill="none" stroke="#917242" stroke-width="4" stroke-linecap="round"/>
+    <path d="M346 192 C319 204 299 223 286 246" fill="none" stroke="#917242" stroke-width="4" stroke-linecap="round"/>
+    <path d="M346 222 C323 239 305 260 294 284" fill="none" stroke="#917242" stroke-width="4" stroke-linecap="round"/>
 
-  <path d="M200 316 C220 328 241 331 265 327" fill="none" stroke="#6b4f2a" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+    <path d="M342 132 L232 314" fill="none" stroke="#5b4020" stroke-width="14" stroke-linecap="round"/>
+    <path d="M231 313 L204 357 L254 337 Z" fill="url(#bronze)" stroke="#5b4020" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M227 316 L238 333" fill="none" stroke="#5b4020" stroke-width="4" stroke-linecap="round"/>
+
+    <path d="M232 312 C252 302 271 295 288 293 C302 292 313 296 324 304" fill="none" stroke="#6a4d28" stroke-width="6" stroke-linecap="round" opacity="0.86"/>
+  </g>
 </svg>

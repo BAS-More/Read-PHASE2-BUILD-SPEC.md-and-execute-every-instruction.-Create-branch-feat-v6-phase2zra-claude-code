@@ -13,6 +13,11 @@
 const fs = require('fs');
 const path = require('path');
 
+// EZRA feedback helpers (non-blocking)
+let _log, _fmt;
+try { _log = require('./ezra-hook-logger').logHookEvent; } catch { _log = () => {}; }
+try { _fmt = require('./ezra-error-codes').formatError; } catch { _fmt = (c) => 'EZRA: ' + c; }
+
 // --- HTTP dependency (injectable for testing) ---
 
 let _httpsPost = null;
@@ -156,7 +161,11 @@ function resolveApiKey(providerType, projectDir) {
     if (key && key !== 'null' && key !== 'mock') {
       return key;
     }
-  } catch { /* ignore */ }
+  } catch {
+    const msg = _fmt('AGENTS_002', {});
+    console.error(msg);
+    _log(projectDir || process.cwd(), 'ezra-agents', 'info', msg);
+  }
   // 2. Try env
   if (providerType === 'anthropic') return process.env.ANTHROPIC_API_KEY || null;
   if (providerType === 'openai') return process.env.OPENAI_API_KEY || null;
@@ -169,7 +178,11 @@ function resolveModel(providerType, projectDir) {
     const agentsCfg = settings.loadSettings(projectDir).agents || {};
     const model = agentsCfg[providerType + '_model'];
     if (model) return model;
-  } catch { /* ignore */ }
+  } catch {
+    const msg = _fmt('AGENTS_002', {});
+    console.error(msg);
+    _log(projectDir || process.cwd(), 'ezra-agents', 'info', msg);
+  }
   if (providerType === 'anthropic') return 'claude-sonnet-4-20250514';
   if (providerType === 'openai') return 'gpt-4o';
   return 'unknown';
@@ -614,7 +627,10 @@ if (require.main === module) {
       } else {
         process.stdout.write('{}');
       }
-    } catch {
+    } catch (hookErr) {
+      const msg = 'EZRA [AGENTS]: Hook error — ' + (hookErr && hookErr.message ? hookErr.message : 'unknown');
+      console.error(msg);
+      _log(process.cwd(), 'ezra-agents', 'error', msg);
       process.stdout.write('{}');
     }
     process.exit(0);

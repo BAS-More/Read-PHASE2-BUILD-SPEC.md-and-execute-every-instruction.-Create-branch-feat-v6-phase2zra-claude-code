@@ -16,6 +16,12 @@
 
 const fs = require('fs');
 const path = require('path');
+
+// EZRA feedback helpers (non-blocking)
+let _log, _fmt;
+try { _log = require('./ezra-hook-logger').logHookEvent; } catch { _log = () => {}; }
+try { _fmt = require('./ezra-error-codes').formatError; } catch { _fmt = (c) => 'EZRA: ' + c; }
+
 // YAML parser — simple built-in, zero dependencies
 function parseYaml(text) {
   // Parse YAML-like key: value pairs
@@ -65,7 +71,9 @@ process.stdin.on('end', () => {
     // Case-insensitive comparison on Windows to prevent drive-letter casing bypass
     const norm = process.platform === 'win32' ? s => s.toLowerCase() : s => s;
     if (!norm(resolved).startsWith(norm(cwdResolved) + path.sep) && norm(resolved) !== norm(cwdResolved)) {
-      process.stderr.write('EZRA hook error: path traversal blocked\n');
+      const msg = _fmt('GUARD_002', { path: filePath });
+      console.error(msg);
+      _log(cwd, 'ezra-guard', 'error', msg);
       process.exit(0);
       return;
     }
@@ -86,7 +94,10 @@ process.stdin.on('end', () => {
       // Fallback: try as JSON
       try {
         governance = JSON.parse(govContent);
-      } catch {
+      } catch (parseErr) {
+        const msg = _fmt('GUARD_003', { reason: 'Invalid YAML/JSON syntax' });
+        console.error(msg);
+        _log(cwd, 'ezra-guard', 'warn', msg, 'Run /ezra:health to diagnose.');
         process.exit(0); // Can't parse, allow
         return;
       }
@@ -106,6 +117,9 @@ process.stdin.on('end', () => {
         
         if (!hasDecision) {
           // Protected path without decision — warn (change to "deny" for blocking)
+          const guardMsg = _fmt('GUARD_001', { path: relativePath });
+          console.error(guardMsg);
+          _log(cwd, 'ezra-guard', 'warn', guardMsg, 'Run /ezra:decide to authorize.');
           const output = {
             hookSpecificOutput: {
               hookEventName: 'PreToolUse',

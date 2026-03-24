@@ -23,6 +23,11 @@
 const fs = require('fs');
 const path = require('path');
 
+// EZRA feedback helpers (non-blocking)
+let _log, _fmt;
+try { _log = require('./ezra-hook-logger').logHookEvent; } catch { _log = () => {}; }
+try { _fmt = require('./ezra-error-codes').formatError; } catch { _fmt = (c) => 'EZRA: ' + c; }
+
 // ─── Settings Loader (inline, no external deps) ─────────────────
 
 let settingsModule;
@@ -419,6 +424,9 @@ if (require.main === module) {
       // Case-insensitive comparison on Windows to prevent drive-letter casing bypass
       const norm = process.platform === 'win32' ? s => s.toLowerCase() : s => s;
       if (!norm(resolvedPath).startsWith(norm(cwdResolved) + path.sep) && norm(resolvedPath) !== norm(cwdResolved)) {
+        const msg = _fmt('GUARD_002', { path: filePath });
+        console.error(msg);
+        _log(cwd, 'ezra-oversight', 'error', msg);
         process.exit(0);
         return;
       }
@@ -462,6 +470,18 @@ if (require.main === module) {
         return;
       }
 
+      // Log violation summary to stderr for user visibility
+      const critCount = violations.filter(v => v.severity === 'critical' || v.severity === 'high').length;
+      if (critCount > 0) {
+        const msg = _fmt('OVERSIGHT_001', { detail: `${critCount} critical/high issue(s) in ${relativePath}` });
+        console.error(msg);
+        _log(cwd, 'ezra-oversight', 'warn', msg, 'Run /ezra:review.');
+      } else {
+        const msg = _fmt('OVERSIGHT_003', { detail: `${violations.length} issue(s) in ${relativePath}` });
+        console.error(msg);
+        _log(cwd, 'ezra-oversight', 'info', msg, 'Run /ezra:scan.');
+      }
+
       const output = {
         hookSpecificOutput: {
           hookEventName: 'PreToolUse',
@@ -471,8 +491,11 @@ if (require.main === module) {
       };
 
       process.stdout.write(JSON.stringify(output));
-    } catch {
+    } catch (hookErr) {
       // Hook errors should never block work
+      const msg = 'EZRA [OVERSIGHT]: Hook error — ' + (hookErr && hookErr.message ? hookErr.message : 'unknown');
+      console.error(msg);
+      _log(process.cwd(), 'ezra-oversight', 'error', msg);
       process.exit(0);
     }
   });

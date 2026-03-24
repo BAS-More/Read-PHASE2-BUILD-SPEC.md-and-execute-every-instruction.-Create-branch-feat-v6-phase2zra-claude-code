@@ -111,8 +111,13 @@ module.exports = {
 
 // ─── CLI mode ───────────────────────────────────────────────────
 if (require.main === module) {
+  const MAX_STDIN = 1024 * 1024; // 1 MB stdin limit
   let input = '';
-  process.stdin.on('data', c => (input += c));
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', c => {
+    input += c;
+    if (input.length > MAX_STDIN) { process.exit(0); }
+  });
   process.stdin.on('end', () => {
     try {
       const event = JSON.parse(input);
@@ -121,5 +126,6 @@ if (require.main === module) {
     } catch (_) {
       process.stdout.write('{}');
     }
+    process.exit(0);
   });
 }

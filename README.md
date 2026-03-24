@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/ezra-logo.svg" width="220" alt="EZRA logo, a quill writing across a parchment scroll with Hebrew lettering inside an ink-blue seal" />
+  <img src="assets/ezra-logo.svg" width="220" alt="EZRA logo, a feather quill writing across a Torah scroll inside an ink-blue seal" />
 </p>
 
 # EZRA (עזרא)

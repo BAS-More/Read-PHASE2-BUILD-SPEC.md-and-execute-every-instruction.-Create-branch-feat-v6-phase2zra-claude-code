@@ -83,7 +83,7 @@ test('E2E: Install → verify all files → uninstall → verify removal', () =>
 
     // Verify hook count
     const hooks = fs.readdirSync(path.join(claudeDir, 'hooks')).filter(f => f.endsWith('.js'));
-    assert(hooks.length === 22, `Expected 22 hooks, got ${hooks.length}`);
+    assert(hooks.length === 24, `Expected 24 hooks, got ${hooks.length}`);
 
     // Verify skill
     assert(fs.existsSync(path.join(claudeDir, 'skills', 'ezra', 'SKILL.md')), 'SKILL.md missing');
