@@ -117,7 +117,7 @@ test('parseVal: handles all types', () => {
 });
 
 test('readYaml: returns empty for missing file', () => {
-  const result = wf.readYaml('/nonexistent');
+  const result = wf.readYaml(path.join(os.tmpdir(), 'ezra-nonexistent-' + Date.now() + '.yaml'));
   assertEqual(Object.keys(result).length, 0);
 });
 

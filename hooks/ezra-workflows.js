@@ -10,6 +10,11 @@
 const fs = require('fs');
 const path = require('path');
 
+// EZRA feedback helpers (non-blocking)
+let _log, _fmt;
+try { _log = require('./ezra-hook-logger').logHookEvent; } catch { _log = () => {}; }
+try { _fmt = require('./ezra-error-codes').formatError; } catch { _fmt = (c) => 'EZRA: ' + c; }
+
 // ─── Constants ───────────────────────────────────────────────────
 
 const STEP_TYPES = ['ezra', 'shell', 'manual', 'conditional', 'parallel', 'checkpoint', 'command', 'report', 'approval'];
@@ -468,6 +473,9 @@ if (require.main === module) {
       }
       process.stdout.write(JSON.stringify(result));
     } catch (e) {
+      const msg = _fmt('WORKFLOW_001', { detail: e.message });
+      console.error(msg);
+      _log(process.cwd(), 'ezra-workflows', 'warn', msg);
       process.stdout.write(JSON.stringify({ error: e.message }));
     }
     process.exit(0);

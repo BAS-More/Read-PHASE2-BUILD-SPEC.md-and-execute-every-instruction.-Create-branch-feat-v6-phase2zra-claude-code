@@ -6,6 +6,11 @@
  */
 const path = require('path');
 
+// EZRA feedback helpers (non-blocking)
+let _log, _fmt;
+try { _log = require('./ezra-hook-logger').logHookEvent; } catch { _log = () => {}; }
+try { _fmt = require('./ezra-error-codes').formatError; } catch { _fmt = (c) => 'EZRA: ' + c; }
+
 // Feature-to-command mapping for gating
 const GATED_COMMANDS = {
   'ezra:cost':       'cost_tracking',
@@ -124,6 +129,9 @@ if (require.main === module) {
       const result = handleHook(event);
       process.stdout.write(JSON.stringify(result));
     } catch (_) {
+      const msg = _fmt('TIER_001', { detail: 'Hook protocol error' });
+      console.error(msg);
+      _log(process.cwd(), 'ezra-tier-gate', 'warn', msg);
       process.stdout.write('{}');
     }
     process.exit(0);

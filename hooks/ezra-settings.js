@@ -18,6 +18,11 @@
 const fs = require('fs');
 const path = require('path');
 
+// EZRA feedback helpers (non-blocking)
+let _log, _fmt;
+try { _log = require('./ezra-hook-logger').logHookEvent; } catch { _log = () => {}; }
+try { _fmt = require('./ezra-error-codes').formatError; } catch { _fmt = (c) => 'EZRA: ' + c; }
+
 // ─── Defaults ────────────────────────────────────────────────────
 
 const DEFAULTS = {
@@ -449,6 +454,9 @@ if (require.main === module) {
       process.stdout.write(JSON.stringify(settings));
     } catch {
       // Graceful failure — output empty and exit 0
+      const msg = _fmt('SETTINGS_001', { detail: 'Hook protocol error' });
+      console.error(msg);
+      _log(process.cwd(), 'ezra-settings', 'warn', msg);
       process.stdout.write('{}');
     }
     process.exit(0);

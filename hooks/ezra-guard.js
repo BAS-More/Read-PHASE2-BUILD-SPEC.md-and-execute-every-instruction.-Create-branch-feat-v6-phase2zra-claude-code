@@ -103,6 +103,22 @@ process.stdin.on('end', () => {
       }
     }
 
+    // Schema validation — warn on missing required keys or unknown top-level keys
+    const KNOWN_KEYS = ['protected_paths', 'allowed_patterns', 'auto_approve', 'version', 'project', 'settings'];
+    if (governance && typeof governance === 'object') {
+      if (!governance.protected_paths) {
+        const msg = _fmt('GUARD_004', { key: 'protected_paths' });
+        console.error(msg);
+        _log(cwd, 'ezra-guard', 'warn', msg, 'Run /ezra:init to regenerate governance.yaml.');
+      }
+      const unknownKeys = Object.keys(governance).filter(k => !KNOWN_KEYS.includes(k));
+      if (unknownKeys.length > 0) {
+        const msg = 'EZRA [GUARD]: Unknown governance.yaml keys: ' + unknownKeys.join(', ') + '. These will be ignored.';
+        console.error(msg);
+        _log(cwd, 'ezra-guard', 'info', msg);
+      }
+    }
+
     const protectedPaths = governance?.protected_paths || [];
     
     // Check if file matches any protected pattern

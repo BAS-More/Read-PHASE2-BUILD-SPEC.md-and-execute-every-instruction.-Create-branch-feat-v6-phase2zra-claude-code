@@ -24,6 +24,11 @@
 const fs = require('fs');
 const path = require('path');
 
+// EZRA feedback helpers (non-blocking)
+let _log, _fmt;
+try { _log = require('./ezra-hook-logger').logHookEvent; } catch { _log = () => {}; }
+try { _fmt = require('./ezra-error-codes').formatError; } catch { _fmt = (c) => 'EZRA: ' + c; }
+
 const MAX_STDIN = 1024 * 1024; // 1 MB stdin limit
 let input = '';
 process.stdin.setEncoding('utf8');
@@ -183,6 +188,9 @@ process.stdin.on('end', () => {
 
   } catch (err) {
     // Never block work due to hook errors
+    const msg = _fmt('VERSION_001', { detail: err.message });
+    console.error(msg);
+    _log(process.cwd(), 'ezra-version-hook', 'warn', msg);
     process.exit(0);
   }
 });

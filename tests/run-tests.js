@@ -31,6 +31,8 @@ const SUITES = [
   { name: 'V6-License',  script: 'test-v6-license.js' },
   { name: 'V6-Agents-Real', script: 'test-v6-agents-real.js' },
   { name: 'V6-HTTP', script: 'test-v6-http.js' },
+  { name: 'V6-Hook-Logger', script: 'test-v6-hook-logger.js' },
+  { name: 'V6-Error-Codes', script: 'test-v6-error-codes.js' },
   { name: 'Lint', script: 'lint-all.js' },
   { name: 'E2E', script: 'test-e2e.js' },
   { name: 'UAT', script: 'test-uat.js' },

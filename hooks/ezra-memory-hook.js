@@ -10,6 +10,11 @@
 const fs = require('fs');
 const path = require('path');
 
+// EZRA feedback helpers (non-blocking)
+let _log, _fmt;
+try { _log = require('./ezra-hook-logger').logHookEvent; } catch { _log = () => {}; }
+try { _fmt = require('./ezra-error-codes').formatError; } catch { _fmt = (c) => 'EZRA: ' + c; }
+
 // ─── Pattern Detection ───────────────────────────────────────────
 
 const CAPTURE_TRIGGERS = [
@@ -165,6 +170,9 @@ if (require.main === module) {
       const result = processToolOutput(data.tool_output || data.output || '', projectDir);
       process.stdout.write(JSON.stringify(result));
     } catch (e) {
+      const msg = _fmt('MEMORY_001', { detail: e.message });
+      console.error(msg);
+      _log(process.cwd(), 'ezra-memory-hook', 'warn', msg);
       process.stdout.write(JSON.stringify({ error: e.message }));
     }
     process.exit(0);
