@@ -75,7 +75,7 @@ test('E2E: Install → verify all files → uninstall → verify removal', () =>
 
     // Verify command count
     const cmds = fs.readdirSync(path.join(claudeDir, 'commands', 'ezra')).filter(f => f.endsWith('.md'));
-    assert(cmds.length === 22, `Expected 22 commands, got ${cmds.length}`);
+    assert(cmds.length === 39, `Expected 39 commands, got ${cmds.length}`);
 
     // Verify agent count
     const agents = fs.readdirSync(path.join(claudeDir, 'agents')).filter(f => f.endsWith('.md'));
@@ -83,7 +83,7 @@ test('E2E: Install → verify all files → uninstall → verify removal', () =>
 
     // Verify hook count
     const hooks = fs.readdirSync(path.join(claudeDir, 'hooks')).filter(f => f.endsWith('.js'));
-    assert(hooks.length === 5, `Expected 5 hooks, got ${hooks.length}`);
+    assert(hooks.length === 22, `Expected 22 hooks, got ${hooks.length}`);
 
     // Verify skill
     assert(fs.existsSync(path.join(claudeDir, 'skills', 'ezra', 'SKILL.md')), 'SKILL.md missing');
@@ -402,7 +402,8 @@ test('E2E: Installed hooks use absolute paths that exist', () => {
       const hookPath = path.join(claudeDir, 'hooks', hook);
       const content = fs.readFileSync(hookPath, 'utf8');
       assert(content.length > 50, `${hook} is suspiciously short`);
-      assert(content.includes('process.exit'), `${hook} should call process.exit`);
+      // Library hooks (ezra-http.js, ezra-installer.js) export only — no process.exit needed
+      assert(content.includes('process.exit') || content.includes('module.exports'), `${hook} should call process.exit or export a module`);
     }
   } finally {
     cleanup(tmp);
