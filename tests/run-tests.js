@@ -20,6 +20,7 @@ const SUITES = [
   { name: 'V6-Oversight', script: 'test-v6-oversight.js' },
   { name: 'V6-PM', script: 'test-v6-pm.js' },
   { name: 'V6-Settings-Writer', script: 'test-v6-settings-writer.js' },
+  { name: 'V6-Settings-RoundTrip', script: 'test-v6-settings-roundtrip.js' },
   { name: 'V6-Library', script: 'test-v6-library.js' },
   { name: 'V6-Agents', script: 'test-v6-agents.js' },
   { name: 'V6-Dashboard', script: 'test-v6-dashboard-data.js' },

@@ -207,47 +207,75 @@ function parseValue(raw) {
 function parseYamlSimple(text) {
   const result = {};
   const lines = text.split(/\r?\n/);
-  let currentSection = null;
+  let section = null;    // level-0 key (e.g. "self_learning")
+  let subSection = null; // level-1 key (e.g. "domains")
 
   for (const line of lines) {
-    // Skip blank lines and comments
     if (/^\s*$/.test(line) || /^\s*#/.test(line)) continue;
 
-    const indent = line.match(/^(\s*)/)[1].length;
+    const indent = (line.match(/^(\s*)/)[1] || '').length;
+    const trimmed = line.trim();
 
-    // Top-level key (no indent)
+    // Level 0 — top-level key
     if (indent === 0) {
-      const m = line.match(/^(\w[\w_-]*):\s*(.*)?$/);
+      subSection = null;
+      const m = trimmed.match(/^(\w[\w_-]*):\s*(.*)?$/);
       if (!m) continue;
       const key = m[1];
       const val = (m[2] || '').trim();
       if (val === '' || val === undefined) {
-        // Section header — next indented lines belong here
-        currentSection = key;
+        section = key;
         result[key] = {};
       } else {
-        currentSection = null;
+        section = null;
         result[key] = parseValue(val);
       }
-    } else if (currentSection) {
-      // Indented: either a key:value or a list item
-      const trimmed = line.trim();
+      continue;
+    }
+
+    if (!section) continue;
+
+    // Level 1 — inside a section (indent 2)
+    if (indent <= 2 || (indent <= 4 && !subSection)) {
+      subSection = null; // reset sub-section when back to level 1
       if (trimmed.startsWith('- ')) {
-        // List item — convert section to array if needed
-        if (!Array.isArray(result[currentSection])) {
-          result[currentSection] = [];
+        if (!Array.isArray(result[section])) result[section] = [];
+        result[section].push(parseValue(trimmed.slice(2).trim()));
+        continue;
+      }
+      const m = trimmed.match(/^(\w[\w_-]*):\s*(.*)?$/);
+      if (m) {
+        const key = m[1];
+        const val = (m[2] || '').trim();
+        if (typeof result[section] !== 'object' || Array.isArray(result[section])) {
+          result[section] = {};
         }
-        result[currentSection].push(parseValue(trimmed.slice(2).trim()));
-      } else {
-        const m = trimmed.match(/^(\w[\w_-]*):\s*(.*)?$/);
-        if (m) {
-          const key = m[1];
-          const val = (m[2] || '').trim();
-          if (typeof result[currentSection] !== 'object' || Array.isArray(result[currentSection])) {
-            result[currentSection] = {};
-          }
-          result[currentSection][key] = parseValue(val);
+        if (val === '' || val === undefined) {
+          // Sub-section header (e.g. "domains:")
+          subSection = key;
+          result[section][key] = {};
+        } else {
+          result[section][key] = parseValue(val);
         }
+      }
+      continue;
+    }
+
+    // Level 2 — inside a sub-section (indent 4+)
+    if (subSection && indent >= 4) {
+      if (trimmed.startsWith('- ')) {
+        if (!Array.isArray(result[section][subSection])) result[section][subSection] = [];
+        result[section][subSection].push(parseValue(trimmed.slice(2).trim()));
+        continue;
+      }
+      const m = trimmed.match(/^(\w[\w_-]*):\s*(.*)?$/);
+      if (m) {
+        const key = m[1];
+        const val = (m[2] || '').trim();
+        if (typeof result[section][subSection] !== 'object' || Array.isArray(result[section][subSection])) {
+          result[section][subSection] = {};
+        }
+        result[section][subSection][key] = parseValue(val);
       }
     }
   }

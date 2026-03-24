@@ -1132,6 +1132,40 @@ test('Module: exports all expected functions', () => {
 });
 
 // ═══════════════════════════════════════════════════════════════
+
+// ─── Round-trip tests: serialize → parse all 14 sections ─────────
+
+const settingsModule = require(path.join(__dirname, '..', 'hooks', 'ezra-settings.js'));
+const SECTIONS = Object.keys(settingsModule.DEFAULTS);
+
+for (const section of SECTIONS) {
+  test('roundTrip: ' + section + ' survives serialize→parse', () => {
+    const original = settingsModule.DEFAULTS[section];
+    const obj = {};
+    obj[section] = original;
+    const yaml = writer.serializeYaml(obj);
+    const parsed = settingsModule.parseYamlSimple(yaml);
+    const back = parsed[section];
+
+    // Deep compare — stringify both sides
+    const origStr = JSON.stringify(original);
+    const backStr = JSON.stringify(back);
+    assert(origStr === backStr,
+      section + ' mismatch.\nOriginal: ' + origStr.substring(0, 200) +
+      '\nParsed:   ' + backStr.substring(0, 200));
+  });
+}
+
+test('roundTrip: full DEFAULTS survives serialize→parse', () => {
+  const yaml = writer.serializeYaml(settingsModule.DEFAULTS);
+  const parsed = settingsModule.parseYamlSimple(yaml);
+  for (const section of SECTIONS) {
+    const origStr = JSON.stringify(settingsModule.DEFAULTS[section]);
+    const backStr = JSON.stringify(parsed[section]);
+    assert(origStr === backStr, 'Full roundtrip failed for section: ' + section);
+  }
+});
+
 // Summary
 // ═══════════════════════════════════════════════════════════════
 

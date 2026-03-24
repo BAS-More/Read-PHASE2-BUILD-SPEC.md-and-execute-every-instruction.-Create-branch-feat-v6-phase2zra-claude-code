@@ -340,7 +340,7 @@ function generateHandoff(projectDir) {
   // Recent git commits
   try {
     const { execSync } = require('child_process');
-    const output = execSync('git log --oneline -10', { cwd: projectDir, encoding: 'utf8', timeout: 5000 });
+    const output = execSync('git log --oneline -10', { cwd: projectDir, encoding: 'utf8', timeout: 5000, stdio: ['pipe', 'pipe', 'pipe'] });
     brief.recent_commits = output.trim().split('\n').filter(Boolean);
   } catch (e) {
     brief.recent_commits = ['(git not available or not a git repo)'];
