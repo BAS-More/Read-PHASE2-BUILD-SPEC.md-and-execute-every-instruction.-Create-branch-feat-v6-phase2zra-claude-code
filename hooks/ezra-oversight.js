@@ -415,7 +415,10 @@ if (require.main === module) {
 
       // Path traversal guard — resolved path must stay within cwd
       const resolvedPath = path.resolve(cwd, filePath);
-      if (!resolvedPath.startsWith(path.resolve(cwd) + path.sep) && resolvedPath !== path.resolve(cwd)) {
+      const cwdResolved = path.resolve(cwd);
+      // Case-insensitive comparison on Windows to prevent drive-letter casing bypass
+      const norm = process.platform === 'win32' ? s => s.toLowerCase() : s => s;
+      if (!norm(resolvedPath).startsWith(norm(cwdResolved) + path.sep) && norm(resolvedPath) !== norm(cwdResolved)) {
         process.exit(0);
         return;
       }

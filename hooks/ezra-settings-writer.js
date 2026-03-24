@@ -13,7 +13,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const settings = require('./ezra-settings');
+const settings = require(path.join(__dirname, 'ezra-settings.js'));
 
 const { loadSettings, getDefault, parseYamlSimple, parseValue, DEFAULTS } = settings;
 

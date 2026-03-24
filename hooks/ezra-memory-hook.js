@@ -90,7 +90,7 @@ function processToolOutput(toolOutput, projectDir) {
   // Try to require memory module for storing
   let memory;
   try {
-    memory = require('./ezra-memory.js');
+    memory = require(path.join(__dirname, 'ezra-memory.js'));
   } catch (e) {
     return { captured: 0, entries: [], error: 'Memory module not available' };
   }
@@ -118,7 +118,7 @@ function processToolOutput(toolOutput, projectDir) {
 function isDuplicate(projectDir, content) {
   let memory;
   try {
-    memory = require('./ezra-memory.js');
+    memory = require(path.join(__dirname, 'ezra-memory.js'));
   } catch (e) {
     return false;
   }

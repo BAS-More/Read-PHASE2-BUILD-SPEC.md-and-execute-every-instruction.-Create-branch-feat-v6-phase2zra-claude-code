@@ -61,7 +61,10 @@ process.stdin.on('end', () => {
 
     // Path traversal guard — resolved path must stay within cwd
     const resolved = path.resolve(cwd, filePath);
-    if (!resolved.startsWith(path.resolve(cwd) + path.sep) && resolved !== path.resolve(cwd)) {
+    const cwdResolved = path.resolve(cwd);
+    // Case-insensitive comparison on Windows to prevent drive-letter casing bypass
+    const norm = process.platform === 'win32' ? s => s.toLowerCase() : s => s;
+    if (!norm(resolved).startsWith(norm(cwdResolved) + path.sep) && norm(resolved) !== norm(cwdResolved)) {
       process.stderr.write('EZRA hook error: path traversal blocked\n');
       process.exit(0);
       return;

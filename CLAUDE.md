@@ -44,6 +44,7 @@ Run all: `node tests/run-tests.js`
 - `test-v6-integration.js` — Cross-hook integration
 - `test-v6-license.js` — License management
 - `test-v6-agents-real.js` — Agent real-world scenarios
+- `test-v6-http.js` — HTTP module, SSRF protection, URL validation
 - `lint-all.js` — Code quality (strict mode, no console.error, proper exit codes)
 - `test-e2e.js` — End-to-end flows in temp directories
 - `test-uat.js` — Alpha/Beta/UAT acceptance tests

@@ -6,6 +6,35 @@
 const https = require('https');
 const http = require('http');
 
+// ─── SSRF Protection ────────────────────────────────────────────
+
+/**
+ * Block requests to private/internal IP ranges (SSRF protection).
+ * Blocks: localhost, 10.x, 172.16-31.x, 192.168.x, 169.254.x, ::1
+ */
+const PRIVATE_IP_PATTERNS = [
+  /^127\./,                          // loopback
+  /^10\./,                           // Class A private
+  /^172\.(1[6-9]|2\d|3[01])\./,     // Class B private
+  /^192\.168\./,                     // Class C private
+  /^169\.254\./,                     // link-local
+  /^0\./,                            // current network
+  /^::1$/,                           // IPv6 loopback
+  /^fd[0-9a-f]{2}:/i,               // IPv6 unique local
+  /^fe80:/i,                         // IPv6 link-local
+];
+
+const BLOCKED_HOSTNAMES = ['localhost', '[::1]', '0.0.0.0'];
+
+function isBlockedHost(hostname) {
+  const h = hostname.toLowerCase();
+  if (BLOCKED_HOSTNAMES.includes(h)) return true;
+  for (const pat of PRIVATE_IP_PATTERNS) {
+    if (pat.test(h)) return true;
+  }
+  return false;
+}
+
 // ─── httpsPost ──────────────────────────────────────────────────
 
 /**
@@ -18,6 +47,9 @@ const http = require('http');
 function httpsPost(url, body, headers) {
   return new Promise((resolve, reject) => {
     const urlObj = new URL(url);
+    if (isBlockedHost(urlObj.hostname)) {
+      return reject(new Error('SSRF blocked: requests to private/internal addresses are not allowed'));
+    }
     const postData = JSON.stringify(body);
     const mod = urlObj.protocol === 'http:' ? http : https;
     const options = {
@@ -59,6 +91,9 @@ function httpsPost(url, body, headers) {
 function httpsGet(url, headers) {
   return new Promise((resolve, reject) => {
     const urlObj = new URL(url);
+    if (isBlockedHost(urlObj.hostname)) {
+      return reject(new Error('SSRF blocked: requests to private/internal addresses are not allowed'));
+    }
     const mod = urlObj.protocol === 'http:' ? http : https;
     const options = {
       hostname: urlObj.hostname,
@@ -89,4 +124,7 @@ function httpsGet(url, headers) {
 module.exports = {
   httpsPost,
   httpsGet,
+  isBlockedHost,
+  PRIVATE_IP_PATTERNS,
+  BLOCKED_HOSTNAMES,
 };
