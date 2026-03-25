@@ -111,6 +111,7 @@ function readDeepYaml(filePath) {
         const m = line.match(/^(\w[\w_-]*):\s*(.*)?$/);
         if (!m) continue;
         const key = m[1];
+        if (/^(__proto__|constructor|prototype)$/.test(key)) continue;
         const val = (m[2] || '').trim();
         if (val === '') {
           currentKey = key;
@@ -147,6 +148,7 @@ function readDeepYaml(filePath) {
       if (currentObj) {
         const m = trimmed.match(/^(\w[\w_-]*):\s*(.*)?$/);
         if (m) {
+          if (/^(__proto__|constructor|prototype)$/.test(m[1])) continue;
           currentObj[m[1]] = parsePrimitive((m[2] || '').trim());
           continue;
         }
@@ -156,6 +158,7 @@ function readDeepYaml(filePath) {
       if (currentKey && !currentArray) {
         const m = trimmed.match(/^(\w[\w_-]*):\s*(.*)?$/);
         if (m) {
+          if (/^(__proto__|constructor|prototype)$/.test(m[1])) continue;
           if (typeof result[currentKey] !== 'object' || Array.isArray(result[currentKey])) {
             result[currentKey] = {};
           }
@@ -184,6 +187,7 @@ function parseSimple(text) {
       const m = line.match(/^(\w[\w_-]*):\s*(.*)?$/);
       if (!m) continue;
       const key = m[1];
+      if (/^(__proto__|constructor|prototype)$/.test(key)) continue;
       const val = (m[2] || '').trim();
       if (val === '') {
         currentSection = key;
@@ -202,6 +206,7 @@ function parseSimple(text) {
       } else {
         const m = trimmed.match(/^(\w[\w_-]*):\s*(.*)?$/);
         if (m) {
+          if (/^(__proto__|constructor|prototype)$/.test(m[1])) continue;
           if (typeof result[currentSection] !== 'object' || Array.isArray(result[currentSection])) {
             result[currentSection] = {};
           }

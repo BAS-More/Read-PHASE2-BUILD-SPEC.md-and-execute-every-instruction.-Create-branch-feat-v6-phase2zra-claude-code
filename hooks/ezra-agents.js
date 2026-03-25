@@ -122,6 +122,7 @@ function readYaml(filePath) {
       const m = line.match(/^([\w_-]+):\s*(.*)?$/);
       if (!m) continue;
       const key = m[1];
+      if (/^(__proto__|constructor|prototype)$/.test(key)) continue;
       const val = (m[2] || '').trim();
       if (val === '' || val === undefined) {
         currentSection = key;
@@ -140,6 +141,7 @@ function readYaml(filePath) {
       const m = trimmed.match(/^([\w_-]+):\s*(.*)?$/);
       if (m) {
         const key = m[1];
+        if (/^(__proto__|constructor|prototype)$/.test(key)) continue;
         const val = (m[2] || '').trim();
         if (typeof result[currentSection] !== 'object') result[currentSection] = {};
         if (val === 'true') result[currentSection][key] = true;

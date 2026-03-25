@@ -7,6 +7,8 @@ const https = require('https');
 const http = require('http');
 const dns = require('dns');
 
+const MAX_RESPONSE_SIZE = 5 * 1024 * 1024; // 5 MB response limit
+
 // ─── SSRF Protection ────────────────────────────────────────────
 
 /**
@@ -97,7 +99,12 @@ function httpsPost(url, body, headers) {
       };
       const req = https.request(options, (res) => {
         let data = '';
-        res.on('data', chunk => data += chunk);
+        res.on('data', chunk => {
+          data += chunk;
+          if (data.length > MAX_RESPONSE_SIZE) {
+            req.destroy(new Error('Response exceeded ' + MAX_RESPONSE_SIZE + ' bytes'));
+          }
+        });
         res.on('end', () => {
           let parsed;
           try { parsed = JSON.parse(data); } catch (_) { parsed = data; }
@@ -143,7 +150,12 @@ function httpsGet(url, headers) {
       };
       const req = https.request(options, (res) => {
         let data = '';
-        res.on('data', chunk => data += chunk);
+        res.on('data', chunk => {
+          data += chunk;
+          if (data.length > MAX_RESPONSE_SIZE) {
+            req.destroy(new Error('Response exceeded ' + MAX_RESPONSE_SIZE + ' bytes'));
+          }
+        });
         res.on('end', () => {
           let parsed;
           try { parsed = JSON.parse(data); } catch (_) { parsed = data; }

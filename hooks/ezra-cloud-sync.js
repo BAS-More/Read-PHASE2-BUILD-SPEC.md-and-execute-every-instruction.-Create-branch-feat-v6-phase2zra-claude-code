@@ -48,6 +48,7 @@ function readYaml(filePath) {
     const match = trimmed.match(/^([\w.-]+):\s*(.*)$/);
     if (match) {
       const [, key, val] = match;
+      if (/^(__proto__|constructor|prototype)$/.test(key)) continue;
       if (val === 'true') result[key] = true;
       else if (val === 'false') result[key] = false;
       else if (val === 'null' || val === '~') result[key] = null;
@@ -296,17 +297,25 @@ function diffManifests(manifest1, manifest2) {
 function readCloudSyncSettings(projectDir) {
   const settingsPath = path.join(projectDir, '.ezra', 'settings.yaml');
   if (!fs.existsSync(settingsPath)) return {};
-  const content = fs.readFileSync(settingsPath, 'utf8');
-  const result = {};
-  const enabledMatch = content.match(/cloud_sync[\s\S]*?enabled:\s*(true|false)/);
-  if (enabledMatch) result.enabled = enabledMatch[1] === 'true';
-  const endpointMatch = content.match(/endpoint:\s*['"]?([^\s'"]+)/);
-  if (endpointMatch) result.endpoint = endpointMatch[1];
-  const tokenMatch = content.match(/auth_token:\s*['"]?([^\s'"]+)/);
-  if (tokenMatch) result.auth_token = tokenMatch[1];
-  const projectIdMatch = content.match(/project_id:\s*['"]?([^\s'"]+)/);
-  if (projectIdMatch) result.project_id = projectIdMatch[1];
-  return result;
+  // F-002: Use structured YAML parsing instead of regex to avoid credential leakage
+  try {
+    const settingsModule = require(path.join(__dirname, 'ezra-settings.js'));
+    const all = settingsModule.loadSettings(projectDir);
+    const cs = all.cloud_sync || {};
+    return {
+      enabled: cs.enabled === true,
+      endpoint: cs.endpoint || undefined,
+      auth_token: cs.auth_token || undefined,
+      project_id: cs.project_id || undefined,
+    };
+  } catch {
+    // Fallback: minimal parsing without credentials
+    const content = fs.readFileSync(settingsPath, 'utf8');
+    const result = {};
+    const enabledMatch = content.match(/cloud_sync[\s\S]*?enabled:\s*(true|false)/);
+    if (enabledMatch) result.enabled = enabledMatch[1] === 'true';
+    return result;
+  }
 }
 
 // ─── Push Sync ──────────────────────────────────────────────────
@@ -411,7 +420,11 @@ function pullSync(projectDir) {
         if (!fs.existsSync(decisionsDir)) fs.mkdirSync(decisionsDir, { recursive: true });
         for (const d of data.decisions) {
           if (d.file && d.content) {
-            fs.writeFileSync(path.join(decisionsDir, d.file), d.content, 'utf8');
+            // F-001: Validate filename — reject path traversal attempts
+            const safe = path.basename(d.file);
+            if (safe !== d.file || d.file.includes('..') || d.file.includes('/') || d.file.includes('\\')) continue;
+            if (!safe.endsWith('.yaml') && !safe.endsWith('.yml')) continue;
+            fs.writeFileSync(path.join(decisionsDir, safe), d.content, 'utf8');
             mergedCount++;
           }
         }

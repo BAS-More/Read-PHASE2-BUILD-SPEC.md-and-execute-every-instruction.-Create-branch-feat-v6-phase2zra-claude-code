@@ -49,6 +49,7 @@ function readYaml(filePath) {
     const match = trimmed.match(/^([\w.-]+):\s*(.*)$/);
     if (match) {
       const [, key, val] = match;
+      if (/^(__proto__|constructor|prototype)$/.test(key)) continue;
       if (val === '' || val === '|' || val === '>') {
         currentKey = key;
         inArray = true;

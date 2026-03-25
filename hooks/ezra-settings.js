@@ -239,6 +239,7 @@ function parseYamlSimple(text) {
       const m = trimmed.match(/^(\w[\w_-]*):\s*(.*)?$/);
       if (!m) continue;
       const key = m[1];
+      if (/^(__proto__|constructor|prototype)$/.test(key)) continue;
       const val = (m[2] || '').trim();
       if (val === '' || val === undefined) {
         section = key;
@@ -263,6 +264,7 @@ function parseYamlSimple(text) {
       const m = trimmed.match(/^(\w[\w_-]*):\s*(.*)?$/);
       if (m) {
         const key = m[1];
+        if (/^(__proto__|constructor|prototype)$/.test(key)) continue;
         const val = (m[2] || '').trim();
         if (typeof result[section] !== 'object' || Array.isArray(result[section])) {
           result[section] = {};
@@ -288,6 +290,7 @@ function parseYamlSimple(text) {
       const m = trimmed.match(/^(\w[\w_-]*):\s*(.*)?$/);
       if (m) {
         const key = m[1];
+        if (/^(__proto__|constructor|prototype)$/.test(key)) continue;
         const val = (m[2] || '').trim();
         if (typeof result[section][subSection] !== 'object' || Array.isArray(result[section][subSection])) {
           result[section][subSection] = {};
@@ -308,8 +311,10 @@ function parseYamlSimple(text) {
  */
 function deepMerge(target, source) {
   const output = {};
+  const BLOCKED = new Set(['__proto__', 'constructor', 'prototype']);
   // Copy target first
   for (const key of Object.keys(target)) {
+    if (BLOCKED.has(key)) continue;
     if (target[key] !== null && typeof target[key] === 'object' && !Array.isArray(target[key])) {
       output[key] = deepMerge(target[key], {});
     } else if (Array.isArray(target[key])) {
@@ -320,6 +325,7 @@ function deepMerge(target, source) {
   }
   // Overlay source
   for (const key of Object.keys(source)) {
+    if (BLOCKED.has(key)) continue;
     if (source[key] !== null && typeof source[key] === 'object' && !Array.isArray(source[key])) {
       output[key] = deepMerge(output[key] || {}, source[key]);
     } else if (Array.isArray(source[key])) {

@@ -54,6 +54,7 @@ function parseYaml(text) {
     if (!trimmed || trimmed.startsWith('#')) continue;
     const kvMatch = trimmed.match(/^([\w._-]+):\s*(.*)$/);
     if (kvMatch) {
+      if (/^(__proto__|constructor|prototype)$/.test(kvMatch[1])) continue;
       currentKey = kvMatch[1];
       const val = kvMatch[2].trim();
       if (val) {

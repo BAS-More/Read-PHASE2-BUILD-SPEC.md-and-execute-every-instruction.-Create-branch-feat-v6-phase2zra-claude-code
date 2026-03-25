@@ -55,6 +55,7 @@ function readYaml(filePath) {
     const topMatch = line.match(/^([\w][\w_.-]*):\s*(.*)/);
     if (topMatch) {
       const key = topMatch[1];
+      if (/^(__proto__|constructor|prototype)$/.test(key)) continue;
       const val = topMatch[2].trim();
       if (val === '' || val === '|' || val === '>') {
         result[key] = {};
@@ -67,6 +68,7 @@ function readYaml(filePath) {
     }
     const subMatch = line.match(/^  ([\w][\w_.-]*):\s*(.*)/);
     if (subMatch && currentKey) {
+      if (/^(__proto__|constructor|prototype)$/.test(subMatch[1])) continue;
       if (typeof result[currentKey] !== 'object') result[currentKey] = {};
       result[currentKey][subMatch[1]] = parseVal(subMatch[2]);
     }

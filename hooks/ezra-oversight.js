@@ -96,6 +96,7 @@ function loadSecuritySettings(cwd) {
 // ─── Glob Matching ───────────────────────────────────────────────
 
 function matchGlob(filePath, pattern) {
+  if (!pattern || pattern.length > 200) return false;
   const normalized = filePath.replace(/\\/g, '/');
   let regex = pattern
     .replace(/\./g, '\\.')
@@ -419,11 +420,19 @@ if (require.main === module) {
       const cwd = event.cwd || process.cwd();
 
       // Path traversal guard — resolved path must stay within cwd
-      const resolvedPath = path.resolve(cwd, filePath);
+      // F-004: Use realpathSync for symlink resolution
+      let resolvedPath = path.resolve(cwd, filePath);
+      try {
+        if (fs.existsSync(resolvedPath)) {
+          resolvedPath = fs.realpathSync(resolvedPath);
+        }
+      } catch { /* fallback to resolve */ }
       const cwdResolved = path.resolve(cwd);
+      let cwdReal = cwdResolved;
+      try { cwdReal = fs.realpathSync(cwdResolved); } catch { /* fallback */ }
       // Case-insensitive comparison on Windows to prevent drive-letter casing bypass
       const norm = process.platform === 'win32' ? s => s.toLowerCase() : s => s;
-      if (!norm(resolvedPath).startsWith(norm(cwdResolved) + path.sep) && norm(resolvedPath) !== norm(cwdResolved)) {
+      if (!norm(resolvedPath).startsWith(norm(cwdReal) + path.sep) && norm(resolvedPath) !== norm(cwdReal)) {
         const msg = _fmt('GUARD_002', { path: filePath });
         console.error(msg);
         _log(cwd, 'ezra-oversight', 'error', msg);
