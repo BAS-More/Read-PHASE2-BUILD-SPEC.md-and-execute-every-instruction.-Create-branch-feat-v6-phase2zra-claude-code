@@ -1,7 +1,6 @@
 'use strict';
 
 const MAX_STDIN = 1024 * 1024; // 1 MB stdin safety limit
-const MAX_SCAN_DEPTH = 5; // Safety limit for recursive directory scans
 
 /**
  * EZRA Agent Memory System

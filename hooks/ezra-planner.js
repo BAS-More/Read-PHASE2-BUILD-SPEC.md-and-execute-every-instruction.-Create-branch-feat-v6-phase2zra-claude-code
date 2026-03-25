@@ -1,6 +1,5 @@
 'use strict';
 
-const MAX_SCAN_DEPTH = 5; // Safety limit for recursive directory scans
 /**
  * hooks/ezra-planner.js — Holistic Planning Engine for EZRA v6
  * Plans comprehensively upfront, delivers in verified chunks.

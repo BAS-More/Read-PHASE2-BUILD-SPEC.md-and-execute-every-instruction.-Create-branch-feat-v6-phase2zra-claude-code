@@ -1,6 +1,5 @@
 'use strict';
 
-const MAX_SCAN_DEPTH = 5; // Safety limit for recursive directory scans
 /**
  * hooks/ezra-installer.js — CLI Installer for EZRA v6
  * Installs EZRA hooks into Claude Code hooks directory.
