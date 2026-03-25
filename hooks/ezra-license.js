@@ -245,8 +245,8 @@ function getCachedLicense(projectDir) {
  * Write license cache (used after external validation).
  */
 function computeCacheHmac(dataStr) {
-  const secret = 'ezra-license-' + (process.env.USER || process.env.USERNAME || 'default');
-  return crypto.createHmac('sha256', secret).update(dataStr).digest('hex');
+  const hmacKey = 'ezra-license-' + (process.env.USER || process.env.USERNAME || 'default');
+  return crypto.createHmac('sha256', hmacKey).update(dataStr).digest('hex');
 }
 
 function writeLicenseCache(projectDir, cacheData) {
@@ -282,12 +282,10 @@ function readCloudSettings(projectDir) {
  * - On network error: return cached result if exists, otherwise { valid: true, tier: 'core' }
  */
 function refreshLicense(projectDir) {
-  const cachePath = getCachePath(projectDir);
-
   // Check existing cache freshness
-  if (fs.existsSync(cachePath)) {
+  const cache = getCachedLicense(projectDir);
+  if (cache) {
     try {
-      const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
       const validatedAt = new Date(cache.validated_at);
       const now = new Date();
       const age = daysBetween(validatedAt, now);
@@ -303,11 +301,9 @@ function refreshLicense(projectDir) {
   const cloudSettings = readCloudSettings(projectDir);
   if (!cloudSettings.endpoint || !cloudSettings.license_key) {
     // No endpoint configured — return cached if exists, else core default
-    if (fs.existsSync(cachePath)) {
-      try {
-        const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
-        return { valid: cache.valid !== false, tier: cache.tier || 'core', cached: true, reason: 'no_endpoint' };
-      } catch (_) { /* fall through */ }
+    const fallbackCache = getCachedLicense(projectDir);
+    if (fallbackCache) {
+      return { valid: fallbackCache.valid !== false, tier: fallbackCache.tier || 'core', cached: true, reason: 'no_endpoint' };
     }
     return { valid: true, tier: 'core', cached: false, reason: 'no_endpoint' };
   }

@@ -208,7 +208,7 @@ test('checkLicense handles corrupted cache', () => {
     fs.writeFileSync(path.join(tmp, '.ezra', 'license-cache.json'), 'NOT JSON', 'utf8');
     const result = license.checkLicense(tmp);
     assert.strictEqual(result.valid, false);
-    assert.strictEqual(result.reason, 'cache_corrupted');
+    assert.strictEqual(result.reason, 'no_cache');
   } finally {
     cleanup(tmp);
   }

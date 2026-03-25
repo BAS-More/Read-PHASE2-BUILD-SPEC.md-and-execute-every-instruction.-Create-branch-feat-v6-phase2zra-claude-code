@@ -158,6 +158,7 @@ function setSetting(projectDir, settingPath, value) {
 
   ensureEzraDir(projectDir);
   fs.writeFileSync(settingsPath(projectDir), serializeYaml(current), 'utf8');
+  if (settings._invalidateCache) settings._invalidateCache();
   return { success: true, path: settingPath, value };
 }
 
@@ -178,6 +179,7 @@ function addRule(projectDir, section, rule) {
   current[section].custom_rules.push(rule);
   ensureEzraDir(projectDir);
   fs.writeFileSync(settingsPath(projectDir), serializeYaml(current), 'utf8');
+  if (settings._invalidateCache) settings._invalidateCache();
   return { success: true, section, rule };
 }
 
@@ -199,6 +201,7 @@ function removeRule(projectDir, section, ruleId) {
   const removed = current[section].custom_rules.splice(idx, 1)[0];
   ensureEzraDir(projectDir);
   fs.writeFileSync(settingsPath(projectDir), serializeYaml(current), 'utf8');
+  if (settings._invalidateCache) settings._invalidateCache();
   return { success: true, section, removed };
 }
 /**
@@ -213,6 +216,7 @@ function resetSection(projectDir, section) {
   current[section] = JSON.parse(JSON.stringify(defaults[section]));
   ensureEzraDir(projectDir);
   fs.writeFileSync(settingsPath(projectDir), serializeYaml(current), 'utf8');
+  if (settings._invalidateCache) settings._invalidateCache();
   return { success: true, section };
 }
 
@@ -223,6 +227,7 @@ function resetAll(projectDir) {
   const defaults = getDefault();
   ensureEzraDir(projectDir);
   fs.writeFileSync(settingsPath(projectDir), serializeYaml(defaults), 'utf8');
+  if (settings._invalidateCache) settings._invalidateCache();
   return { success: true };
 }
 
@@ -277,6 +282,7 @@ function initSettings(projectDir) {
   }
   const defaults = getDefault();
   fs.writeFileSync(fp, serializeYaml(defaults), 'utf8');
+  if (settings._invalidateCache) settings._invalidateCache();
   return { created: true, path: fp };
 }
 // ─── Exports ─────────────────────────────────────────────────────
