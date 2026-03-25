@@ -30,7 +30,7 @@ If you discover a security vulnerability in EZRA, please report it responsibly:
 Run the security audit locally:
 
 ```bash
-node _security-audit.js
+npm test
 ```
 
-This scans all 21 hooks for: eval, command injection, hardcoded secrets, path traversal, and dynamic requires.
+The test suite (`tests/lint-all.js`) scans all 24 hooks for: eval, command injection, hardcoded secrets, path traversal, and dynamic requires.
