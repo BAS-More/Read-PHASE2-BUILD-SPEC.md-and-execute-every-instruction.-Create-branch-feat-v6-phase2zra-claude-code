@@ -83,13 +83,15 @@ function hashFile(filePath) {
   return crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
 }
 
-function hashDir(dirPath) {
+function hashDir(dirPath, depth) {
+  if (depth === undefined) depth = 0;
+  if (depth >= MAX_SCAN_DEPTH) return null;
   if (!fs.existsSync(dirPath)) return null;
   const files = fs.readdirSync(dirPath).filter(f => !f.startsWith('.')).sort();
   const hashes = files.map(f => {
     const fp = path.join(dirPath, f);
     const stat = fs.statSync(fp);
-    if (stat.isDirectory()) return hashDir(fp);
+    if (stat.isDirectory()) return hashDir(fp, depth + 1);
     return hashFile(fp);
   }).filter(Boolean);
   if (hashes.length === 0) return null;
@@ -128,12 +130,14 @@ function generateManifest(projectDir) {
   };
 }
 
-function countFilesInDir(dirPath) {
+function countFilesInDir(dirPath, depth) {
+  if (depth === undefined) depth = 0;
+  if (depth >= MAX_SCAN_DEPTH) return 0;
   let count = 0;
   for (const f of fs.readdirSync(dirPath)) {
     const fp = path.join(dirPath, f);
     const stat = fs.statSync(fp);
-    count += stat.isDirectory() ? countFilesInDir(fp) : 1;
+    count += stat.isDirectory() ? countFilesInDir(fp, depth + 1) : 1;
   }
   return count;
 }
@@ -202,14 +206,16 @@ function createBackup(projectDir) {
   };
 }
 
-function copyDirRecursive(src, dest) {
+function copyDirRecursive(src, dest, depth) {
+  if (depth === undefined) depth = 0;
+  if (depth >= MAX_SCAN_DEPTH) return;
   fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(src)) {
     const srcItem = path.join(src, entry);
     const destItem = path.join(dest, entry);
     const stat = fs.statSync(srcItem);
     if (stat.isDirectory()) {
-      copyDirRecursive(srcItem, destItem);
+      copyDirRecursive(srcItem, destItem, depth + 1);
     } else {
       fs.copyFileSync(srcItem, destItem);
     }

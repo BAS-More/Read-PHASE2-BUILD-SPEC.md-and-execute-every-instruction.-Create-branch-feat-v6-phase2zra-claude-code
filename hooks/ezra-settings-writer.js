@@ -132,6 +132,10 @@ function ensureEzraDir(projectDir) {
 function setSetting(projectDir, settingPath, value) {
   const current = loadSettings(projectDir);
   const parts = settingPath.split('.');
+  const BLOCKED = /^(__proto__|constructor|prototype)$/;
+  if (parts.some(p => BLOCKED.test(p))) {
+    return { success: false, error: 'Blocked property name in path' };
+  }
 
   if (parts.length === 1) {
     current[parts[0]] = value;

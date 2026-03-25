@@ -8,6 +8,7 @@ const MAX_SCAN_DEPTH = 5; // Safety limit for recursive directory scans
  */
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 // ─── Constants ──────────────────────────────────────────────────
 

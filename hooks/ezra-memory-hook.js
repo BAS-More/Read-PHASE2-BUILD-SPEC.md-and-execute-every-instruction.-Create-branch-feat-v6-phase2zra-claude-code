@@ -172,7 +172,13 @@ if (require.main === module) {
     try {
       const data = JSON.parse(input);
       const projectDir = data.project_dir || data.projectDir || process.cwd();
-      const result = processToolOutput(data.tool_output || data.output || '', projectDir);
+      // F-022: Validate projectDir to prevent path traversal
+      const resolved = path.resolve(projectDir);
+      if (resolved !== projectDir && !fs.existsSync(path.join(resolved, '.ezra'))) {
+        process.stdout.write(JSON.stringify({ error: 'invalid project directory' }));
+        process.exit(0);
+      }
+      const result = processToolOutput(data.tool_output || data.output || '', resolved);
       process.stdout.write(JSON.stringify(result));
     } catch (e) {
       const msg = _fmt('MEMORY_001', { detail: e.message });

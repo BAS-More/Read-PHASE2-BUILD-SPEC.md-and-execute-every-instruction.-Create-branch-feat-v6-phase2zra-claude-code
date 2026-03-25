@@ -266,8 +266,9 @@ function formatError(codeKey, ctx) {
 
   // Interpolate {key} placeholders
   for (const [key, val] of Object.entries(context)) {
-    msg = msg.replace(new RegExp('\\{' + key + '\\}', 'g'), String(val));
-    action = action.replace(new RegExp('\\{' + key + '\\}', 'g'), String(val));
+    const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    msg = msg.replace(new RegExp('\\{' + escaped + '\\}', 'g'), String(val));
+    action = action.replace(new RegExp('\\{' + escaped + '\\}', 'g'), String(val));
   }
 
   return 'EZRA [' + def.code + ']: ' + msg + ' ' + action;
