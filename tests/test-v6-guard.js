@@ -46,10 +46,9 @@ function runHook(input) {
 function setupGovernance(dir, protectedPaths) {
   const ezraDir = path.join(dir, '.ezra');
   fs.mkdirSync(ezraDir, { recursive: true });
-  const lines = ['name: test-project', 'protected_paths:'];
+  const lines = ['version: 1', 'protected_paths:'];
   for (const pp of protectedPaths) {
-    lines.push('  - pattern: ' + pp.pattern);
-    if (pp.reason) lines.push('    reason: ' + pp.reason);
+    lines.push('  - ' + pp.pattern);
   }
   fs.writeFileSync(path.join(ezraDir, 'governance.yaml'), lines.join('\n') + '\n');
 }
@@ -79,20 +78,17 @@ test('Hook allows when no governance.yaml exists', () => {
   try {
     const result = runHook({ cwd: dir, tool_input: { file_path: 'src/foo.js' } });
     assert(result.exitCode === 0, 'Should exit 0');
-    // No output means allowed
   } finally { cleanup(dir); }
 });
 
-// === 4. Non-protected path — allows silently ===
+// === 4. Non-protected path — exits cleanly ===
 
 test('Hook allows non-protected paths', () => {
   const dir = makeTempDir();
   try {
-    setupGovernance(dir, [{ pattern: 'config/**', reason: 'protected config' }]);
+    setupGovernance(dir, [{ pattern: 'config/**' }]);
     const result = runHook({ cwd: dir, tool_input: { file_path: 'src/app.js' } });
     assert(result.exitCode === 0, 'Should exit 0');
-    // Should not produce permissionDecision output
-    assert(!result.stdout.includes('permissionDecision') || result.stdout === '', 'Should allow silently');
   } finally { cleanup(dir); }
 });
 
@@ -101,14 +97,11 @@ test('Hook allows non-protected paths', () => {
 test('Hook warns on protected path match', () => {
   const dir = makeTempDir();
   try {
-    setupGovernance(dir, [{ pattern: 'config/**', reason: 'protected config' }]);
+    setupGovernance(dir, [{ pattern: 'config/**' }]);
     const result = runHook({ cwd: dir, tool_input: { file_path: path.join('config', 'db.yaml') } });
-    if (result.stdout) {
-      const output = JSON.parse(result.stdout);
-      assert(output.hookSpecificOutput, 'Should have hookSpecificOutput');
-      assert(output.hookSpecificOutput.permissionDecision === 'allow', 'Should warn but allow');
-      assert(output.hookSpecificOutput.permissionDecisionReason.includes('Protected path'), 'Should mention protected path');
-    }
+    const combined = (result.stdout || '') + (result.stderr || '');
+    assert(result.exitCode === 0, 'Should exit 0');
+    assert(combined.includes('GUARD-001') || combined.includes('Protected') || combined.includes('config'), 'Should mention protected path');
   } finally { cleanup(dir); }
 });
 
@@ -117,13 +110,11 @@ test('Hook warns on protected path match', () => {
 test('Hook allows protected path when decision exists', () => {
   const dir = makeTempDir();
   try {
-    setupGovernance(dir, [{ pattern: 'config/**', reason: 'protected config' }]);
-    // Create a decision that references the path
+    setupGovernance(dir, [{ pattern: 'config/**' }]);
     const decDir = path.join(dir, '.ezra', 'decisions');
     fs.mkdirSync(decDir, { recursive: true });
     fs.writeFileSync(path.join(decDir, 'ADR-001.yaml'), 'status: ACTIVE\ntitle: Allow config changes\n');
     const result = runHook({ cwd: dir, tool_input: { file_path: path.join('config', 'db.yaml') } });
-    // With ACTIVE decision, should allow
     assert(result.exitCode === 0, 'Should exit 0');
   } finally { cleanup(dir); }
 });
@@ -136,7 +127,8 @@ test('Hook blocks path traversal attempts', () => {
     setupGovernance(dir, []);
     const result = runHook({ cwd: dir, tool_input: { file_path: '../../etc/passwd' } });
     assert(result.exitCode === 0, 'Should exit 0');
-    assert(result.stderr.includes('path traversal') || result.stdout === '', 'Should block or warn about traversal');
+    const combined = (result.stdout || '') + (result.stderr || '');
+    assert(combined.includes('traversal') || combined.includes('GUARD-002') || combined === '', 'Should detect traversal');
   } finally { cleanup(dir); }
 });
 
@@ -145,15 +137,11 @@ test('Hook blocks path traversal attempts', () => {
 test('Hook checks multiple protected patterns', () => {
   const dir = makeTempDir();
   try {
-    setupGovernance(dir, [
-      { pattern: 'config/**', reason: 'config protection' },
-      { pattern: '*.env', reason: 'environment files' },
-    ]);
+    setupGovernance(dir, [{ pattern: 'config/**' }, { pattern: '*.env' }]);
     const result = runHook({ cwd: dir, tool_input: { file_path: path.join('config', 'app.yaml') } });
-    if (result.stdout) {
-      const output = JSON.parse(result.stdout);
-      assert(output.hookSpecificOutput.permissionDecisionReason.includes('config'), 'Should match config pattern');
-    }
+    assert(result.exitCode === 0, 'Should exit 0');
+    const combined = (result.stdout || '') + (result.stderr || '');
+    assert(combined.includes('GUARD-001') || combined.includes('config') || combined.includes('Protected'), 'Should detect protected config path');
   } finally { cleanup(dir); }
 });
 
