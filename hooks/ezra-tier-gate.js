@@ -65,7 +65,7 @@ function checkGate(commandName, projectDir) {
     try {
       const refreshResult = license.refreshLicense(projectDir);
       if (refreshResult && typeof refreshResult.then === 'function') {
-        // Async refresh started — use current check result for now
+        refreshResult.catch(() => {});
       }
     } catch (_) {
       // Refresh failed — proceed with current check

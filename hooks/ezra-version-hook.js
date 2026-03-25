@@ -136,12 +136,24 @@ process.stdin.on('end', () => {
       ''
     ].join('\n');
 
-    // Append to changelog
+    // Append to changelog (with rotation — keep last 1000 entries)
     const changelogPath = path.join(versionsDir, 'changelog.yaml');
     if (!fs.existsSync(changelogPath)) {
       fs.writeFileSync(changelogPath, `# EZRA Changelog — APPEND ONLY\nlog:\n${entry}`);
     } else {
-      fs.appendFileSync(changelogPath, entry);
+      const existing = fs.readFileSync(changelogPath, 'utf8');
+      const entryCount = (existing.match(/  - id: CHG-/g) || []).length;
+      if (entryCount > 1000) {
+        const lines = existing.split('\n');
+        const headerEnd = lines.findIndex(l => l.startsWith('  - id: CHG-'));
+        const entryStarts = [];
+        lines.forEach((l, i) => { if (l.startsWith('  - id: CHG-')) entryStarts.push(i); });
+        const keepFrom = entryStarts[entryStarts.length - 500] || headerEnd;
+        const rotated = lines.slice(0, headerEnd).concat(lines.slice(keepFrom)).join('\n');
+        fs.writeFileSync(changelogPath, rotated + entry);
+      } else {
+        fs.appendFileSync(changelogPath, entry);
+      }
     }
 
     // Update current.yaml (minimal — just version and total_changes)

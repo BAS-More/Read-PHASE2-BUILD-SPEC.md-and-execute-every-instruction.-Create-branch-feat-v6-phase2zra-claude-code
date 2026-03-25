@@ -123,8 +123,8 @@ process.stdin.on('end', () => {
       return;
     }
 
-    // Increment global counter
-    counter.edits_since_sync++;
+    // Increment global counter (capped to prevent unbounded growth)
+    counter.edits_since_sync = Math.min((counter.edits_since_sync || 0) + 1, 100000);
 
     // Save counter
     const proposalsDir = path.join(ezraDir, 'docs');

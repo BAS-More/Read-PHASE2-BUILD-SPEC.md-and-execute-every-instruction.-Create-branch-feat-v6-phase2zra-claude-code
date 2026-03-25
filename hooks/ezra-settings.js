@@ -346,9 +346,22 @@ function getDefault() {
   return JSON.parse(JSON.stringify(DEFAULTS));
 }
 
+// ─── Settings Cache ──────────────────────────────────────────────
+
+let _cache = null;
+let _cacheDir = null;
+let _cacheMtime = 0;
+
+function _invalidateCache() {
+  _cache = null;
+  _cacheDir = null;
+  _cacheMtime = 0;
+}
+
 /**
  * Load settings from .ezra/settings.yaml, merged with defaults.
  * If the file doesn't exist, returns defaults.
+ * Uses a simple mtime-based cache to avoid re-reading on every call.
  */
 function loadSettings(projectDir) {
   const defaults = getDefault();
@@ -356,9 +369,18 @@ function loadSettings(projectDir) {
   if (!fs.existsSync(settingsPath)) return defaults;
 
   try {
+    const stat = fs.statSync(settingsPath);
+    const mtime = stat.mtimeMs;
+    if (_cache && _cacheDir === projectDir && _cacheMtime === mtime) {
+      return JSON.parse(JSON.stringify(_cache));
+    }
     const text = fs.readFileSync(settingsPath, 'utf8');
     const parsed = parseYamlSimple(text);
-    return deepMerge(defaults, parsed);
+    const merged = deepMerge(defaults, parsed);
+    _cache = merged;
+    _cacheDir = projectDir;
+    _cacheMtime = mtime;
+    return JSON.parse(JSON.stringify(merged));
   } catch {
     return defaults;
   }
@@ -445,6 +467,7 @@ module.exports = {
   deepMerge,
   DEFAULTS,
   getDefault,
+  _invalidateCache,
 };
 
 // ─── Hook Protocol (stdin → stdout) ──────────────────────────────

@@ -397,6 +397,7 @@ function importMemories(projectDir, exported) {
   
   for (const entry of exported.entries) {
     if (!entry.type || !entry.content) { skipped++; continue; }
+    if (!MEMORY_TYPES.includes(entry.type)) { skipped++; continue; }
     const existing = getMemory(projectDir, entry.type, entry.id);
     if (existing) { skipped++; continue; }
     addMemory(projectDir, entry);

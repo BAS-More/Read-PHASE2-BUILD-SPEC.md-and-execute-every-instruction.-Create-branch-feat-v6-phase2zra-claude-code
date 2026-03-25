@@ -328,6 +328,7 @@ function listRuns(projectDir, processName) {
 
 function resolveStepDependencies(steps) {
   // Build dependency graph — steps with depends_on
+  // Note: O(n²) worst case; acceptable for typical workflow sizes (<100 steps)
   const resolved = [];
   const remaining = [...steps];
   const resolvedIds = new Set();

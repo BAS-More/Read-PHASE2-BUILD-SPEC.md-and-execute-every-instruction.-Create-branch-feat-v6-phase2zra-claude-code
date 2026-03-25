@@ -35,7 +35,7 @@ function run(cmd, opts = {}) {
   try {
     return execSync(cmd, { encoding: 'utf-8', timeout: 120000, stdio: 'pipe', ...opts }).trim();
   } catch (e) {
-    return { error: true, message: e.stderr || e.message };
+    if (e.stdout && e.stdout.trim()) return e.stdout.trim();`n    return { error: true, message: (e.stderr || e.message || '').slice(0, 500) };
   }
 }
 
