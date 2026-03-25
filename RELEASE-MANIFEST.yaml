@@ -3,8 +3,8 @@
 # ALL components deploy together or NONE deploy.
 
 version: "6.0.0"
-release_date: null  # Set when release is executed
-release_status: PENDING  # PENDING → DEPLOYING → LIVE → ROLLBACK
+release_date: "2026-03-25"  # Deployment executed
+release_status: PARTIAL  # 4/6 deployed: supabase, core, mcp, dashboard
 
 components:
   core:
@@ -16,7 +16,7 @@ components:
     deploy_command: "npm publish"
     verify_command: "npm view ezra-claude-code version"
     rollback_command: "npm unpublish ezra-claude-code@6.0.0"
-    status: NOT_DEPLOYED
+    status: DEPLOYED  # Published 2026-03-25
 
   supabase:
     repo: BAS-More/ezra-cloud
@@ -53,7 +53,7 @@ components:
     deploy_command: "npm publish"
     verify_command: "npm view ezra-mcp-server version"
     rollback_command: "npm unpublish ezra-mcp-server@6.0.0"
-    status: NOT_DEPLOYED
+    status: DEPLOYED  # Published as ezra-mcp@6.0.0 on 2026-03-25
 
   dashboard:
     repo: BAS-More/ezra-dashboard
@@ -64,7 +64,7 @@ components:
     deploy_command: "npx vercel --prod"
     verify_command: "curl -s https://ezradev.com | findstr version"
     rollback_command: "npx vercel rollback"
-    status: NOT_DEPLOYED
+    status: DEPLOYED  # Deployed to Vercel 2026-03-25, live at ezra-dashboard-pi.vercel.app
 
   jetbrains:
     repo: BAS-More/ezra-jetbrains
