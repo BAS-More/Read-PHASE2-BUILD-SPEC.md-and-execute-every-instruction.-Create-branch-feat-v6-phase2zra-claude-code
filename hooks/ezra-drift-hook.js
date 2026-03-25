@@ -168,3 +168,5 @@ process.stdin.on('end', () => {
     process.exit(0);
   }
 });
+
+module.exports = { MAX_STDIN };

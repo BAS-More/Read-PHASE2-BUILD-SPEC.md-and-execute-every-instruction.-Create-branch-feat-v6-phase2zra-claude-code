@@ -212,10 +212,8 @@ function checkDecisionExists(decisionsDir, filePath) {
   for (const file of files) {
     try {
       const content = fs.readFileSync(path.join(decisionsDir, file), 'utf8');
-      // Simple check: does any decision reference this file or a matching pattern?
-      if (content.includes(filePath) || content.includes('status: ACTIVE')) {
-        // More thorough: parse and check affected_paths
-        // For performance, the simple string check is usually sufficient
+      // Check if this decision references the file AND is active
+      if (content.includes(filePath) && /status:\s*ACTIVE/i.test(content)) {
         return true;
       }
     } catch {

@@ -6,6 +6,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 // ─── Constants ──────────────────────────────────────────────────
 
@@ -119,8 +120,8 @@ function checkLicense(projectDir) {
   }
 
   // For pro/team/enterprise, check cache
-  const cachePath = getCachePath(projectDir);
-  if (!fs.existsSync(cachePath)) {
+  const cache = getCachedLicense(projectDir);
+  if (!cache) {
     return {
       valid: false,
       tier,
@@ -132,7 +133,6 @@ function checkLicense(projectDir) {
   }
 
   try {
-    const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
     const validatedAt = new Date(cache.validated_at);
     const now = new Date();
     const age = daysBetween(validatedAt, now);
@@ -225,7 +225,17 @@ function getCachedLicense(projectDir) {
   const cachePath = getCachePath(projectDir);
   if (!fs.existsSync(cachePath)) return null;
   try {
-    return JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+    const raw = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+    // Verify HMAC integrity if present
+    if (raw && raw._hmac && raw._data) {
+      const expected = computeCacheHmac(raw._data);
+      if (!crypto.timingSafeEqual(Buffer.from(raw._hmac, 'hex'), Buffer.from(expected, 'hex'))) {
+        return null; // tampered
+      }
+      return JSON.parse(raw._data);
+    }
+    // Legacy unprotected cache — still readable but treat as untrusted
+    return raw;
   } catch (_) {
     return null;
   }
@@ -234,11 +244,19 @@ function getCachedLicense(projectDir) {
 /**
  * Write license cache (used after external validation).
  */
+function computeCacheHmac(dataStr) {
+  const secret = 'ezra-license-' + (process.env.USER || process.env.USERNAME || 'default');
+  return crypto.createHmac('sha256', secret).update(dataStr).digest('hex');
+}
+
 function writeLicenseCache(projectDir, cacheData) {
   const cachePath = getCachePath(projectDir);
   const dir = path.dirname(cachePath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(cachePath, JSON.stringify(cacheData, null, 2), 'utf8');
+  const dataStr = JSON.stringify(cacheData, null, 2);
+  const hmac = computeCacheHmac(dataStr);
+  const wrapped = JSON.stringify({ _data: dataStr, _hmac: hmac }, null, 2);
+  fs.writeFileSync(cachePath, wrapped, 'utf8');
   return { success: true, path: cachePath };
 }
 
@@ -313,11 +331,9 @@ function refreshLicense(projectDir) {
     })
     .catch(() => {
       // Network error — return cached if exists, else core default
-      if (fs.existsSync(cachePath)) {
-        try {
-          const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
-          return { valid: cache.valid !== false, tier: cache.tier || 'core', cached: true, reason: 'network_error' };
-        } catch (_) { /* fall through */ }
+      const cachedData = getCachedLicense(projectDir);
+      if (cachedData) {
+        return { valid: cachedData.valid !== false, tier: cachedData.tier || 'core', cached: true, reason: 'network_error' };
       }
       return { valid: true, tier: 'core', cached: false, reason: 'network_error' };
     });
@@ -337,6 +353,7 @@ module.exports = {
   getLicenseStatus,
   getCachedLicense,
   writeLicenseCache,
+  computeCacheHmac,
   refreshLicense,
   readCloudSettings,
   tierRank,

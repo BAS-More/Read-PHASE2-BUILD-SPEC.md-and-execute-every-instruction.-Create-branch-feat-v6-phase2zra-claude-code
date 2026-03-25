@@ -149,3 +149,5 @@ function run(event) {
   }
   process.exit(0);
 }
+
+module.exports = { run, MAX_STDIN };

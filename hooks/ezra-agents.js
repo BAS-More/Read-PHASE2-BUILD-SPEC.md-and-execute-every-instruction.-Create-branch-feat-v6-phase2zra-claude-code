@@ -292,7 +292,8 @@ function createAnthropicProvider(config) {
         return { success: true, output, tokens_in, tokens_out, cost_usd, duration_ms };
       } catch (err) {
         busy = false;
-        return { success: false, output: '', error: err.message, duration_ms: Date.now() - start };
+        const safeMsg = apiKey ? err.message.split(apiKey).join('[REDACTED]') : err.message;
+        return { success: false, output: '', error: safeMsg, duration_ms: Date.now() - start };
       }
     },
     status: () => busy ? 'busy' : 'ready',
@@ -350,7 +351,8 @@ function createOpenAIProvider(config) {
         return { success: true, output, tokens_in, tokens_out, cost_usd, duration_ms };
       } catch (err) {
         busy = false;
-        return { success: false, output: '', error: err.message, duration_ms: Date.now() - start };
+        const safeMsg = apiKey ? err.message.split(apiKey).join('[REDACTED]') : err.message;
+        return { success: false, output: '', error: safeMsg, duration_ms: Date.now() - start };
       }
     },
     status: () => busy ? 'busy' : 'ready',

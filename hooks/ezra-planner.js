@@ -117,11 +117,11 @@ function getGapReportsDir(projectDir) {
 }
 
 function generateId() {
-  return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  return Date.now().toString(36) + '-' + crypto.randomBytes(4).toString('hex');
 }
 
 function timestamp() {
-  return new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19) + '-' + Math.random().toString(36).slice(2, 6);
+  return new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19) + '-' + crypto.randomBytes(2).toString('hex');
 }
 
 // ─── Core Functions ─────────────────────────────────────────────
@@ -478,6 +478,12 @@ function listGapReports(projectDir) {
 function deletePlan(projectDir) {
   const plansDir = path.join(projectDir, PLANS_DIR);
   if (!fs.existsSync(plansDir)) return { success: false, error: 'no plans directory' };
+  // Guard: ensure plansDir is inside projectDir
+  const resolved = path.resolve(plansDir);
+  const parent = path.resolve(projectDir);
+  if (!resolved.startsWith(parent + path.sep)) {
+    return { success: false, error: 'plans directory outside project boundary' };
+  }
   fs.rmSync(plansDir, { recursive: true, force: true });
   return { success: true };
 }

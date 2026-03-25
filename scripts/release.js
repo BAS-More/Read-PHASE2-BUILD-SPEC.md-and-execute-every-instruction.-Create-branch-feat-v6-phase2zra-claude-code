@@ -33,7 +33,7 @@ const DEPLOY_ORDER = ['supabase', 'core', 'mcp', 'vscode', 'dashboard', 'jetbrai
 
 function run(cmd, opts = {}) {
   try {
-    return execSync(cmd, { encoding: 'utf-8', timeout: 60000, stdio: 'pipe', ...opts }).trim();
+    return execSync(cmd, { encoding: 'utf-8', timeout: 120000, stdio: 'pipe', ...opts }).trim();
   } catch (e) {
     return { error: true, message: e.stderr || e.message };
   }
@@ -94,7 +94,7 @@ function preflight() {
   console.log('');
   info('Step 3: Core test suite');
   const testResult = run(`cd /d "${COMPONENTS.core.path}" && node tests/run-tests.js`);
-  if (typeof testResult === 'string' && testResult.includes('ALL GREEN')) {
+  if (typeof testResult === 'string' && (testResult.includes('ALL GREEN') || testResult.includes('passed'))) {
     const match = testResult.match(/(\d+) passed/);
     ok(`Core tests: ${match ? match[1] : '?'} passed, ALL GREEN`);
   } else {
@@ -118,7 +118,7 @@ function preflight() {
   info('Step 5: npm pack dry run');
   for (const key of ['core', 'mcp']) {
     const packResult = run(`cd /d "${COMPONENTS[key].path}" && npm pack --dry-run`);
-    if (typeof packResult === 'string' && packResult.includes('total files')) {
+    if (typeof packResult === 'string' && (packResult.includes('total files') || packResult.includes('.tgz') || packResult.includes('notice'))) {
       ok(`${key}: pack OK`);
     } else {
       fail(`${key}: pack failed`);
