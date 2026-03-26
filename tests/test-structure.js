@@ -60,7 +60,7 @@ test('package.json exists and is valid JSON', () => {
   assert(fs.existsSync(p), 'package.json missing');
   const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
   assert(pkg.name === 'ezra-claude-code', `name is "${pkg.name}" not "ezra-claude-code"`);
-  assert(pkg.version === '6.0.0', `version is "${pkg.version}" not "6.0.0"`);
+  assert(pkg.version === '6.1.0', `version is "${pkg.version}" not "6.1.0"`);
   assert(pkg.bin['ezra-claude-code'] === 'bin/cli.js', 'bin entry wrong');
   assert(pkg.engines.node === '>=16.7.0', 'engines.node wrong');
 });

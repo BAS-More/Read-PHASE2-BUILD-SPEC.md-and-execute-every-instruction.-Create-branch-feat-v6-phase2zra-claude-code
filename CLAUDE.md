@@ -2,7 +2,7 @@
 
 ## Project
 - **Repo**: C:\Dev\ezra-claude-code (github.com/BAS-More/ezra-claude-code)
-- **Version**: 6.0.0
+- **Version**: 6.1.0
 - **License**: MIT
 - **Node**: >=16.7.0
 - **Dependencies**: ZERO — pure Node.js only. Do NOT add any npm dependencies.
