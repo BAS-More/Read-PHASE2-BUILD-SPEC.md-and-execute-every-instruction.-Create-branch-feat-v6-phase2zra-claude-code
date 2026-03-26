@@ -9,7 +9,11 @@
       "Bash(node -e \":*)",
       "Bash(node tests/lint-all.js)",
       "Bash(node tests/test-e2e.js)",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(grep -Pn catchs*\\\\\\(s*\\\\\\)s*{ hooks/*.js bin/*.js)",
+      "Bash(node hooks/ezra-guard.js)",
+      "Bash(node hooks/ezra-oversight.js)",
+      "Bash(node hooks/ezra-progress-hook.js)"
     ]
   }
 }

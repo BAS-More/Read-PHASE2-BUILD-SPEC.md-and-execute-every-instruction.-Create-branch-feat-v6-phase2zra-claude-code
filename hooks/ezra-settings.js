@@ -19,6 +19,7 @@ const MAX_STDIN = 1024 * 1024; // 1 MB stdin safety limit
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 // EZRA feedback helpers (non-blocking)
 let _log, _fmt;
@@ -47,12 +48,12 @@ const DEFAULTS = {
   },
   oversight: {
     enabled: true,
-    level: 'warn',
+    level: 'gate',
     health_threshold: 75,
     auto_pause_on_critical: true,
     review_every_n_files: 5,
-    excluded_paths: ['*.test.ts', '*.spec.ts', 'docs/*'],
-    notify_on: ['critical', 'high'],
+    excluded_paths: ['node_modules', '.git', 'dist', 'coverage'],
+    notify_on: ['critical', 'high', 'medium', 'low'],
   },
   best_practices: {
     enabled: true,
@@ -131,8 +132,8 @@ const DEFAULTS = {
   },
   dashboard: {
     portfolio_path: '~/.ezra-portfolio.yaml',
-    auto_export: false,
-    export_format: 'yaml',
+    auto_export: true,
+    export_format: 'json',
     refresh_interval: 'manual',
   },
   memory: {
@@ -359,14 +360,35 @@ function _invalidateCache() {
 }
 
 /**
- * Load settings from .ezra/settings.yaml, merged with defaults.
- * If the file doesn't exist, returns defaults.
+ * Load global defaults from ~/.claude/hooks/ezra-defaults.yaml.
+ * Falls back to hardcoded DEFAULTS if file doesn't exist.
+ */
+function loadGlobalDefaults() {
+  const globalPath = path.join(os.homedir(), '.claude', 'hooks', 'ezra-defaults.yaml');
+  const defaults = getDefault();
+  if (!fs.existsSync(globalPath)) return defaults;
+  try {
+    const text = fs.readFileSync(globalPath, 'utf8');
+    const parsed = parseYamlSimple(text);
+    return deepMerge(defaults, parsed);
+  } catch {
+    return defaults;
+  }
+}
+
+/**
+ * Load settings with 3-layer merge:
+ *   1. Hardcoded DEFAULTS (safety net)
+ *   2. Global ~/.claude/hooks/ezra-defaults.yaml (user preferences)
+ *   3. Project .ezra/settings.yaml (project-specific overrides)
+ *
+ * Each layer overrides the previous. Missing layers are skipped.
  * Uses a simple mtime-based cache to avoid re-reading on every call.
  */
 function loadSettings(projectDir) {
-  const defaults = getDefault();
+  const globalMerged = loadGlobalDefaults();
   const settingsPath = path.join(projectDir, '.ezra', 'settings.yaml');
-  if (!fs.existsSync(settingsPath)) return defaults;
+  if (!fs.existsSync(settingsPath)) return globalMerged;
 
   try {
     const stat = fs.statSync(settingsPath);
@@ -376,13 +398,13 @@ function loadSettings(projectDir) {
     }
     const text = fs.readFileSync(settingsPath, 'utf8');
     const parsed = parseYamlSimple(text);
-    const merged = deepMerge(defaults, parsed);
+    const merged = deepMerge(globalMerged, parsed);
     _cache = merged;
     _cacheDir = projectDir;
     _cacheMtime = mtime;
     return JSON.parse(JSON.stringify(merged));
   } catch {
-    return defaults;
+    return globalMerged;
   }
 }
 
@@ -467,6 +489,7 @@ module.exports = {
   deepMerge,
   DEFAULTS,
   getDefault,
+  loadGlobalDefaults,
   _invalidateCache,
 };
 

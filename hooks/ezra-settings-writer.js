@@ -23,7 +23,7 @@ try { _fmt = require('./ezra-error-codes').formatError; } catch { _fmt = (c) => 
 
 const settings = require(path.join(__dirname, 'ezra-settings.js'));
 
-const { loadSettings, getDefault, parseYamlSimple, parseValue, DEFAULTS } = settings;
+const { loadSettings, getDefault, loadGlobalDefaults, parseYamlSimple, parseValue, DEFAULTS } = settings;
 
 // ─── YAML Serializer ─────────────────────────────────────────────
 
@@ -224,7 +224,7 @@ function resetSection(projectDir, section) {
  * Reset all settings to defaults.
  */
 function resetAll(projectDir) {
-  const defaults = getDefault();
+  const defaults = loadGlobalDefaults();
   ensureEzraDir(projectDir);
   fs.writeFileSync(settingsPath(projectDir), serializeYaml(defaults), 'utf8');
   if (settings._invalidateCache) settings._invalidateCache();
@@ -244,7 +244,7 @@ function exportSettings(projectDir) {
  */
 function diffSettings(projectDir) {
   const current = loadSettings(projectDir);
-  const defaults = getDefault();
+  const defaults = loadGlobalDefaults();
   const diffs = [];
 
   function compare(cur, def, prefix) {

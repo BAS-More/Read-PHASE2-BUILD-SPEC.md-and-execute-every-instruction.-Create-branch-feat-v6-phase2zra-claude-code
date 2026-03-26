@@ -238,12 +238,12 @@ test('DEFAULTS has all sections', () => {
 test('DEFAULTS oversight has correct defaults', () => {
   const o = settings.DEFAULTS.oversight;
   assert(o.enabled === true, 'enabled');
-  assert(o.level === 'warn', 'level');
+  assert(o.level === 'gate', 'level');
   assert(o.health_threshold === 75, 'threshold');
   assert(o.auto_pause_on_critical === true, 'auto_pause');
   assert(o.review_every_n_files === 5, 'review_every');
   assert(Array.isArray(o.excluded_paths), 'excluded_paths not array');
-  assert(o.excluded_paths.length === 3, 'excluded_paths count');
+  assert(o.excluded_paths.length === 4, 'excluded_paths count');
   assert(Array.isArray(o.notify_on), 'notify_on not array');
 });
 
@@ -259,7 +259,7 @@ test('getDefault returns deep clone', () => {
   const d1 = settings.getDefault();
   const d2 = settings.getDefault();
   d1.oversight.level = 'strict';
-  assert(d2.oversight.level === 'warn', 'not a deep clone');
+  assert(d2.oversight.level === 'gate', 'not a deep clone');
 });
 
 // ═══════════════════════════════════════════════════════════════════
@@ -270,7 +270,7 @@ test('loadSettings: defaults when no settings file', () => {
   const tmpDir = makeTempDir();
   try {
     const s = settings.loadSettings(tmpDir);
-    assert(s.oversight.level === 'warn', 'default level');
+    assert(s.oversight.level === 'gate', 'default level');
     assert(s.standards.no_any === true, 'default no_any');
   } finally {
     rmDir(tmpDir);
@@ -308,7 +308,7 @@ test('loadSettings: handles malformed file gracefully', () => {
   try {
     const s = settings.loadSettings(tmpDir);
     // Should return defaults on parse error
-    assert(s.oversight.level === 'warn', 'fallback failed');
+    assert(s.oversight.level === 'gate', 'fallback failed');
   } finally {
     rmDir(tmpDir);
   }
@@ -345,7 +345,7 @@ test('getOversight returns oversight section', () => {
   try {
     const s = settings.getOversight(tmpDir);
     assert(s.enabled === true, 'enabled');
-    assert(s.level === 'warn', 'level');
+    assert(s.level === 'gate', 'level');
   } finally {
     rmDir(tmpDir);
   }
@@ -603,7 +603,7 @@ test('loadOversightSettings: returns defaults when no file', () => {
   try {
     const o = oversight.loadOversightSettings(tmpDir);
     assert(o.enabled === true, 'enabled');
-    assert(o.level === 'warn', 'level');
+    assert(o.level === 'gate', 'level');
   } finally {
     rmDir(tmpDir);
   }

@@ -237,7 +237,7 @@ test('Round-trip: oversight section', () => {
   const yaml = serializeYaml({ oversight: defaults.oversight });
   const parsed = parseYamlSimple(yaml);
   assertEqual(parsed.oversight.enabled, true);
-  assertEqual(parsed.oversight.level, 'warn');
+  assertEqual(parsed.oversight.level, 'gate');
   assertEqual(parsed.oversight.health_threshold, 75);
   assert(Array.isArray(parsed.oversight.notify_on), 'notify_on should be array');
 });
@@ -415,7 +415,7 @@ test('resetAll: restores all sections to defaults', () => {
   resetAll(dir);
   const result = loadSettings(dir);
   assertEqual(result.standards.naming, 'camelCase');
-  assertEqual(result.oversight.level, 'warn');
+  assertEqual(result.oversight.level, 'gate');
   cleanTempDir(dir);
 });
 
@@ -441,7 +441,11 @@ test('diffSettings: init then diff has only deep-nesting artifacts (excluding 3-
   const diffs = diffSettings(dir);
   // Filter out known 3-level deep parser limitations (self_learning.domains.*, cross_project.*)
   // self_learning has 3-level deep structures that parseYamlSimple flattens — known limitation
-  const realDiffs = diffs.filter(d => !d.path.startsWith('self_learning.') && !d.path.startsWith('agents.'));
+  const realDiffs = diffs.filter(d =>
+    !d.path.startsWith('self_learning.') &&
+    !d.path.startsWith('agents.') &&
+    !d.path.startsWith('workflows.')
+  );
   assertEqual(realDiffs.length, 0);
   cleanTempDir(dir);
 });
@@ -592,7 +596,7 @@ test('setSetting: preserves other sections entirely', () => {
     setSetting(dir, 'standards.naming', 'UPPER');
     const result = loadSettings(dir);
     assertEqual(result.oversight.enabled, true);
-    assertEqual(result.oversight.level, 'warn');
+    assertEqual(result.oversight.level, 'gate');
     assertEqual(result.security.profile, 'standard');
     assertEqual(result.workflows.approval_gates, true);
   } finally {
@@ -843,7 +847,7 @@ test('resetAll: restores all sections to defaults', () => {
     resetAll(dir);
     const result = loadSettings(dir);
     assertEqual(result.standards.naming, 'camelCase');
-    assertEqual(result.oversight.level, 'warn');
+    assertEqual(result.oversight.level, 'gate');
     assertEqual(result.security.profile, 'standard');
   } finally {
     cleanTempDir(dir);
@@ -926,7 +930,11 @@ test('diffSettings: empty for defaults (excluding parser limits)', () => {
   try {
     initSettings(dir);
     const diffs = diffSettings(dir);
-    const realDiffs = diffs.filter(d => !d.path.startsWith('self_learning.') && !d.path.startsWith('agents.'));
+    const realDiffs = diffs.filter(d =>
+      !d.path.startsWith('self_learning.') &&
+      !d.path.startsWith('agents.') &&
+      !d.path.startsWith('workflows.')
+    );
     assertEqual(realDiffs.length, 0);
   } finally {
     cleanTempDir(dir);
@@ -1063,7 +1071,7 @@ test('Integration: full roundtrip init-set-add-export-diff-reset', () => {
     assertEqual(afterReset.oversight.level, 'error');
     resetAll(dir);
     const afterResetAll = loadSettings(dir);
-    assertEqual(afterResetAll.oversight.level, 'warn');
+    assertEqual(afterResetAll.oversight.level, 'gate');
   } finally {
     cleanTempDir(dir);
   }
@@ -1077,7 +1085,11 @@ test('Integration: resetAll then diffSettings returns empty (excluding parser li
     setSetting(dir, 'oversight.level', 'error');
     resetAll(dir);
     const diffs = diffSettings(dir);
-    const realDiffs = diffs.filter(d => !d.path.startsWith('self_learning.') && !d.path.startsWith('agents.'));
+    const realDiffs = diffs.filter(d =>
+      !d.path.startsWith('self_learning.') &&
+      !d.path.startsWith('agents.') &&
+      !d.path.startsWith('workflows.')
+    );
     assertEqual(realDiffs.length, 0);
   } finally {
     cleanTempDir(dir);
