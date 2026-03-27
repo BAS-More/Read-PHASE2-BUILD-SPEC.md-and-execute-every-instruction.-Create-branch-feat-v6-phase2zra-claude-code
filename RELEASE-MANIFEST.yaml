@@ -2,8 +2,8 @@
 # Single source of truth for what version each component should be at.
 # ALL components deploy together or NONE deploy.
 
-version: "6.0.0"
-release_date: "2026-03-25"  # Deployment executed
+version: "6.1.0"
+release_date: "2026-03-27"  # Updated from 6.0.0
 release_status: LIVE  # 6/6 deployed: all components live
 
 components:
@@ -12,7 +12,7 @@ components:
     path: C:\Dev\Ezra
     deploy_target: npm
     package_name: ezra-claude-code
-    current_version: "6.0.0"
+    current_version: "6.1.0"
     deploy_command: "npm publish"
     verify_command: "npm view ezra-claude-code version"
     rollback_command: "npm unpublish ezra-claude-code@6.0.0"
@@ -23,7 +23,7 @@ components:
     path: C:\Dev\ezra-cloud
     deploy_target: supabase_edge_functions
     project_id: fwmmqjjocwsjnvlumrba
-    current_version: "6.0.0"
+    current_version: "6.1.0"
     functions:
       - validate-license
       - activate-license
@@ -38,7 +38,7 @@ components:
     path: C:\Dev\ezra-vscode
     deploy_target: vscode_marketplace
     package_name: ezra-governance
-    current_version: "6.0.0"
+    current_version: "6.1.0"
     deploy_command: "npx vsce publish"
     verify_command: "npx vsce show ezra-governance --json | findstr version"
     rollback_command: "npx vsce unpublish BAS-More.ezra-governance"
@@ -49,7 +49,7 @@ components:
     path: C:\Dev\ezra-mcp
     deploy_target: npm
     package_name: ezra-mcp-server
-    current_version: "6.0.0"
+    current_version: "6.1.0"
     deploy_command: "npm publish"
     verify_command: "npm view ezra-mcp-server version"
     rollback_command: "npm unpublish ezra-mcp-server@6.0.0"
@@ -60,7 +60,7 @@ components:
     path: C:\Dev\ezra-dashboard
     deploy_target: vercel
     domain: ezradev.com
-    current_version: "6.0.0"
+    current_version: "6.1.0"
     deploy_command: "npx vercel --prod"
     verify_command: "curl -s https://ezradev.com | findstr version"
     rollback_command: "npx vercel rollback"
@@ -70,7 +70,7 @@ components:
     repo: BAS-More/ezra-jetbrains
     path: C:\Dev\ezra-jetbrains
     deploy_target: jetbrains_marketplace
-    current_version: "6.0.0"
+    current_version: "6.1.0"
     deploy_command: "./gradlew publishPlugin"
     verify_command: "check marketplace listing"
     rollback_command: "remove from marketplace"

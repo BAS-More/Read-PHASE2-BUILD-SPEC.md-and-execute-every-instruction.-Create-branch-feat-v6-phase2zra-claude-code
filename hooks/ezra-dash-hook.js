@@ -117,10 +117,10 @@ function run(event) {
     let uncommitted = 0;
     try {
       const { execSync } = require('child_process');
-      branch = execSync('git branch --show-current', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }).trim() || '?';
-      const status = execSync('git status --porcelain', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
+      branch = execSync('git branch --show-current', { encoding: 'utf8', timeout: 5000, stdio: ['pipe', 'pipe', 'ignore'] }).trim() || '?';
+      const status = execSync('git status --porcelain', { encoding: 'utf8', timeout: 5000, stdio: ['pipe', 'pipe', 'ignore'] });
       uncommitted = status.split('\n').filter(l => l.trim()).length;
-    } catch (_) { /* not a git repo */ }
+    } catch (_) { /* not a git repo or timeout */ }
 
     const healthIcon = healthScore === '—' ? '⚪' :
       parseInt(healthScore) >= 80 ? '🟢' :
